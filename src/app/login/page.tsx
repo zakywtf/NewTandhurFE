@@ -122,7 +122,7 @@ export default function Page() {
           <div className="mt-7 flex flex-col">
             <EmailNomorHPField
               name="email_no_hp"
-              label="Email/Nomor HP"
+              label="Username"
               disabled={formik.isSubmitting}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
