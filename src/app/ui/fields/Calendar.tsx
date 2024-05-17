@@ -322,6 +322,7 @@ const Calendar: React.FC<CalendarProp> = ({
                 const bulan = moment().month(i).format("MMM")
                 return (
                   <span
+                    key={crypto.randomUUID()}
                     onClick={() => selectMonth(i + 1)}
                     className={`rounded-lg text-center hover:bg-gray-100 ${
                       currentMonth == i + 1
@@ -366,6 +367,7 @@ const Calendar: React.FC<CalendarProp> = ({
               {[...Array(12)].map((x, i) => {
                 return (
                   <span
+                    key={crypto.randomUUID()}
                     onClick={() => selectYear(indexYearList + i)}
                     className={`rounded-lg text-center hover:bg-gray-100 ${
                       currentYear == indexYearList + i
