@@ -8,6 +8,7 @@ import {
   RefreshIcon,
   UserIcon,
 } from "@heroicons/react/solid"
+import { deleteCookie } from "cookies-next"
 import { SessionProvider, signOut } from "next-auth/react"
 import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
@@ -37,6 +38,8 @@ const navigation = [
 
 const handleSignOut = async () => {
   await signOut()
+  deleteCookie("selected-commodity")
+  deleteCookie("farmer")
 }
 
 function classNames(...classes: any[]) {
@@ -121,7 +124,15 @@ export default function Layout({
                                 }`}
                               >
                                 <item.icon className="h-6 w-6" />
-                                <Link href={`${item.href}?farmer_land_id=${searchParams.get('farmer_land_id')}`}>{item.name}</Link>
+                                <Link
+                                  href={`${
+                                    item.href
+                                  }?farmer_land_id=${searchParams.get(
+                                    "farmer_land_id"
+                                  )}`}
+                                >
+                                  {item.name}
+                                </Link>
                               </div>
                             </DisclosureButton>
                           </>

@@ -3,7 +3,7 @@ export type FormActivityData = {
   type_activity: { id: string; name: string } | null
   activity_date: string
   operating_costs: number
-  treatment: string
+  treatment: string | null
   amount: string | number
   unit: { id: string; name: string } | null
   brand: string

@@ -1,9 +1,7 @@
 import { CardProps } from "@/interfaces/CardProp"
 import Button from "../fields/Button"
-import { useRouter } from "next/navigation"
 
-const Card: React.FC<CardProps> = ({ id, name, data }) => {
-  const router = useRouter()
+const Card: React.FC<CardProps> = ({ id, name, data, onClick }) => {
   return (
     <div className="flex flex-col p-6 bg-white shadow-main-4 rounded-[12px]">
       <div className="flex flex-row justify-between">
@@ -33,7 +31,7 @@ const Card: React.FC<CardProps> = ({ id, name, data }) => {
           disabled={false}
           className="ml-auto px-4"
           width="auto"
-          onClick={() => router.push(`/dashboard?farmer_land_id=${id}`)}
+          onClick={onClick}
         />
       </div>
     </div>

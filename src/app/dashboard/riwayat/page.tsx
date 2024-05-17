@@ -4,8 +4,10 @@ import MenuDropdown from "@/app/ui/dropdowns/MenuDropdown"
 import Loading from "@/app/ui/loading"
 import { convertToIndonesiaTanggal, priceSplitter } from "@/helpers/helper"
 import {
+  getHistoryActivities,
   getHistoryCosts,
   getHistoryHarvests,
+  getHistoryIncomes,
 } from "@/helpers/libs/features/actions/historyAction"
 import { useAppDispatch, useAppSelector } from "@/helpers/libs/hooks"
 import {
@@ -54,7 +56,10 @@ export default function Page() {
 }
 
 const ListActivity: React.FC = () => {
+  const { activities } = useAppSelector((state) => state.history)
+  const searchParams = useSearchParams()
   const [rangeDate, setRangeDate] = useState<RangeDate | null>(null)
+  const dispatch = useAppDispatch()
 
   const updateCategoryRange = (
     category: string | "week" | "month" | "year"
@@ -83,6 +88,19 @@ const ListActivity: React.FC = () => {
       })
     }
   }
+
+  useEffect(() => {
+    const farmerLandId = searchParams.get("farmer_land_id")
+    if (farmerLandId && rangeDate) {
+      dispatch(
+        getHistoryActivities({
+          farmer_land_id: farmerLandId,
+          start_date: rangeDate.startDate,
+          end_date: rangeDate.endDate,
+        })
+      )
+    }
+  }, [rangeDate])
 
   const nextDate = () => {
     if (rangeDate) {
@@ -143,6 +161,7 @@ const ListActivity: React.FC = () => {
       }
     }
   }
+
   return (
     <div className="flex flex-col p-6 bg-white shadow-main-4 rounded-[12px]">
       <div className="flex justify-between">
@@ -171,17 +190,19 @@ const ListActivity: React.FC = () => {
           onChange={(value) => updateCategoryRange(value.id)}
         />
       </div>
-      <div className="my-5 flex">
-        <div className="flex flex-col flex-1">
-          <span className="text-lg">Nama Kegiatan</span>
-          <span>XXXX</span>
-          <span>XXXX</span>
-        </div>
-        <div className="flex flex-col flex-1">
-          <span className="text-lg">Tanggal Kegiatan</span>
-          <span>XXXX</span>
-          <span>XXXX</span>
-        </div>
+      <div className="flex flex-wrap">
+        <span className="w-2/4 text-lg">Nama Kegiatan</span>
+        <span className="w-2/4 text-lg">Tanggal Kegiatan</span>
+        {activities.map((activity) => {
+          return (
+            <div key={crypto.randomUUID()} className="w-full flex">
+              <span className="w-2/4">{activity.activity_name}</span>
+              <span className="w-2/4">
+                {convertToIndonesiaTanggal(activity.activity_date)}
+              </span>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
@@ -355,7 +376,10 @@ const ListCost: React.FC = () => {
 }
 
 const ListIncome: React.FC = () => {
+  const { incomes } = useAppSelector((state) => state.history)
+  const searchParams = useSearchParams()
   const [rangeDate, setRangeDate] = useState<RangeDate | null>(null)
+  const dispatch = useAppDispatch()
 
   const updateCategoryRange = (
     category: string | "week" | "month" | "year"
@@ -444,6 +468,19 @@ const ListIncome: React.FC = () => {
       }
     }
   }
+
+  useEffect(() => {
+    const farmerLandId = searchParams.get("farmer_land_id")
+    if (farmerLandId && rangeDate) {
+      dispatch(
+        getHistoryIncomes({
+          farmer_land_id: farmerLandId,
+          start_date: rangeDate.startDate,
+          end_date: rangeDate.endDate,
+        })
+      )
+    }
+  }, [rangeDate])
   return (
     <div className="flex flex-col p-6 bg-white shadow-main-4 rounded-[12px]">
       <span className="font-semibold text-xl text-tand-appr-1">
@@ -477,11 +514,19 @@ const ListIncome: React.FC = () => {
       </div>
       <div className="w-fit my-5 flex flex-col">
         <div className="flex flex-col flex-1">
-          <span>Biaya Operasional X : Rp. 200.000</span>
-          <span>Penjualan : Rp. 200.000</span>
+          {incomes != null ? (
+            <>
+              <span>
+                Biaya Operasional X : Rp. {incomes.total_operating_costs}
+              </span>
+              <span>Penjualan : Rp. {incomes.total_sellings}</span>
+            </>
+          ) : null}
         </div>
         <div className="w-full h-[1px] bg-[#000] my-4" />
-        <span>Total Pendapatan : Rp. 200.000</span>
+        {incomes != null ? (
+          <span>Total Pendapatan : Rp. {incomes.total_incomes}</span>
+        ) : null}
       </div>
     </div>
   )
@@ -628,7 +673,7 @@ const ListHarvest: React.FC = () => {
             return (
               <span key={crypto.randomUUID()} className="capitalize">
                 {" "}
-                {harvest.name} : {harvest.amount} Kg
+                {harvest.name} : {harvest.amount} Ton
               </span>
             )
           })}

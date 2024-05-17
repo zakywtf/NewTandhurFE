@@ -20,7 +20,7 @@ const FormInputKegiatan: React.FC<FormActivity> = ({
   const DisplayingErrorMessagesSchema = Yup.object().shape({
     brand: Yup.string().min(2, "Tulis minimal 2 digit huruf").nullable(),
     treatment: Yup.number()
-      .min(1, "Minimal 1 Digit"),
+      .min(1, "Minimal 1 Digit").nullable(),
     activity_date: Yup.date().required("Mohon isi terlebih dahulu"),
     operating_costs: Yup.number()
       .min(100, "Minimal 3 Digit")
@@ -96,12 +96,13 @@ const FormInputKegiatan: React.FC<FormActivity> = ({
                   <TextField
                     name="treatment"
                     label="Perlakuan Ke"
+                    subLabel="(Tidak Wajib)"
                     type="number"
                     placeholder="Contoh: 1"
                     disabled={props.isSubmitting}
                     onChange={props.handleChange}
                     onBlur={props.handleBlur}
-                    value={props.values.treatment}
+                    value={props.values.treatment ?? ""}
                     error={props.touched.treatment && props.errors.treatment}
                     errorText={props.errors.treatment}
                   />
@@ -109,9 +110,10 @@ const FormInputKegiatan: React.FC<FormActivity> = ({
                     <div className="w-3/5">
                       <TextField
                         name="amount"
-                        label="Hasil Panen"
+                        label="Jumlah/Kuantitas"
+                        subLabel="(Tidak Wajib)"
                         type="number"
-                        placeholder="Isi hasil panen"
+                        placeholder="Isi jumlah/kuantitas"
                         disabled={props.isSubmitting}
                         onChange={props.handleChange}
                         onBlur={props.handleBlur}
@@ -127,6 +129,8 @@ const FormInputKegiatan: React.FC<FormActivity> = ({
                         listItem={[
                           { id: "kg", name: "Kg" },
                           { id: "ton", name: "Ton" },
+                          { id: "liter", name: "Liter" },
+                          { id: "bibit", name: "Bibit" },
                         ]}
                         formik={props}
                         name="unit"
@@ -158,6 +162,7 @@ const FormInputKegiatan: React.FC<FormActivity> = ({
                   <TextField
                     name="brand"
                     label="Jenis/Merk"
+                    subLabel="(Tidak Wajib)"
                     placeholder="Contoh: Merk A"
                     disabled={props.isSubmitting}
                     onChange={props.handleChange}

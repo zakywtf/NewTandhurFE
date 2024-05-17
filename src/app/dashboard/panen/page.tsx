@@ -27,7 +27,7 @@ import {
   createSell,
   getSells,
 } from "@/helpers/libs/features/actions/sellingAction"
-import { useAppDispatch, useAppSelector } from "@/helpers/libs/hooks"
+import { useAppDispatch, useAppSelector, useFarmer } from "@/helpers/libs/hooks"
 import { FormPanenData } from "@/interfaces/FormPanen"
 import { FormPenjualanData } from "@/interfaces/FormPenjualan"
 import { PlusIcon } from "@heroicons/react/solid"
@@ -48,6 +48,7 @@ export default function Page() {
   } = useAppSelector((state) => state.sell)
 
   const dispatch = useAppDispatch()
+  const farmer = useFarmer()
   const searchParams = useSearchParams()
   const [showModal, setShowModal] = useState(false)
   const [showSellModal, setShowSellModal] = useState(false)
@@ -128,7 +129,9 @@ export default function Page() {
       <Loading show={isLoading} />
       <h1 className="text-3xl font-semibold mt-10">Daftar Pemanenan</h1>
       <div className="flex justify-between">
-        <h2 className="text-2xl font-semibold mt-2">Petani A [Nama petani]</h2>
+        <h2 className="text-2xl font-semibold mt-2">
+          {farmer == null ? "Petani Belum Dipilih" : `Petani ${farmer}`}
+        </h2>
         <Button
           buttonType="primary"
           label="Tambah Hasil Panen"
@@ -181,9 +184,9 @@ export default function Page() {
           return (
             <CardPenjualan
               key={crypto.randomUUID()}
-              link={`panen/penjualan/${sell._id}?farmer_land_id=${searchParams.get(
-                "farmer_land_id"
-              )}`}
+              link={`panen/penjualan/${
+                sell._id
+              }?farmer_land_id=${searchParams.get("farmer_land_id")}`}
               name={sell.distributor}
               data={[
                 { name: "Distributor/pembeli", value: sell.distributor },
@@ -223,7 +226,7 @@ export default function Page() {
             unit: null,
             harvest_id: "",
             name: "",
-            operating_costs: 0
+            operating_costs: 0,
           }}
           onSubmit={handleSubmitCreate}
           onCloseModal={() => setShowSellModal(false)}

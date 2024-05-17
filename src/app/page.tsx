@@ -19,6 +19,8 @@ import Button from "./ui/fields/Button"
 import FormInputPetani from "./ui/forms/FormInputPetani"
 import Loading from "./ui/loading"
 import Modal from "./ui/modals/Modal"
+import { useRouter } from "next/navigation"
+import { setCookie } from "cookies-next"
 
 export default function Page() {
   const {
@@ -27,6 +29,7 @@ export default function Page() {
     type: farmerLandType,
   } = useAppSelector((state) => state.farmerland)
   const dispatch = useAppDispatch()
+  const router = useRouter()
   const [showModal, setShowModal] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const selectedCommodity = useCommodity()
@@ -36,10 +39,16 @@ export default function Page() {
     action: any
   ) => {
     setIsLoading(true)
-
     dispatch(createFarmerLand(payload))
-
+    setShowModal(false)
     action.setSubmitting(true)
+  }
+
+  const handleClick = (id: string, farmerName: string) => {
+    setCookie("farmer", farmerName, {
+      maxAge: 60 * 60 * 24,
+    })
+    router.push(`/dashboard?farmer_land_id=${id}`)
   }
 
   useEffect(() => {
@@ -52,7 +61,6 @@ export default function Page() {
     }
     if (farmerLandType == CREATE_FARMER_LAND_FULFILLED) {
       dispatch(getFarmers())
-      setShowModal(false)
       setIsLoading(false)
     }
     if (farmerLandType == GET_ALL_FARMER_FULFILLED) {
@@ -96,6 +104,7 @@ export default function Page() {
                 },
                 { name: "Luasan Lahan (ha)", value: farmer.large },
               ]}
+              onClick={() => handleClick(farmer._id, farmer.farmer_id.name)}
             />
           )
         })}
@@ -111,8 +120,8 @@ export default function Page() {
             phone: "",
             large: 0,
             nik: "",
-            latitude: -7.74223636954,
-            longitude: 110.482076919,
+            latitude: 0,
+            longitude: 0,
             province: null,
             regencies: null,
             district: null,

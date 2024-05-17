@@ -1,6 +1,11 @@
 "use client"
 
-import { GET_MASTER_DESA_FULFILLED, GET_MASTER_KABUPATEN_FULFILLED, GET_MASTER_KECAMATAN_FULFILLED, GET_MASTER_PROVINSI_FULFILLED } from "@/helpers/const"
+import {
+  GET_MASTER_DESA_FULFILLED,
+  GET_MASTER_KABUPATEN_FULFILLED,
+  GET_MASTER_KECAMATAN_FULFILLED,
+  GET_MASTER_PROVINSI_FULFILLED,
+} from "@/helpers/const"
 import {
   getMasterDesa,
   getMasterKabupaten,
@@ -40,6 +45,18 @@ const FormInputPetani: React.FC<FormPetani> = ({
     regencies: Yup.mixed().required("Mohon isi terlebih dahulu"),
     district: Yup.mixed().required("Mohon isi terlebih dahulu"),
     village: Yup.mixed().required("Mohon isi terlebih dahulu"),
+    longitude: Yup.string()
+      .matches(
+        /^(\+|-)?(?:180(?:\.0{1,12})?|(?:[0-9]{1,2}|1[0-7][0-9])(?:\.[0-9]{1,12})?)$/,
+        "Format salah"
+      )
+      .required("Mohon isi terlebih dahulu"),
+    latitude: Yup.string()
+      .matches(
+        /^(\+|-)?(?:180(?:\.0{1,12})?|(?:[0-9]{1,2}|1[0-7][0-9])(?:\.[0-9]{1,12})?)$/,
+        "Format salah"
+      )
+      .required("Mohon isi terlebih dahulu"),
   })
 
   function handleSubmit(values: FormPetaniData, action: any) {
@@ -160,6 +177,29 @@ const FormInputPetani: React.FC<FormPetani> = ({
                   disabled={props.isSubmitting || !props.values.district}
                   error={props.touched.village && props.errors.village}
                   errorText={props.errors.village}
+                />
+                <TextField
+                  name="latitude"
+                  label="Latitude"
+                  placeholder="-7.74223636954"
+                  disabled={props.isSubmitting}
+                  onChange={props.handleChange}
+                  onBlur={props.handleBlur}
+                  value={props.values.latitude.toString()}
+                  error={props.touched.latitude && props.errors.latitude}
+                  errorText={props.errors.latitude}
+                />
+
+                <TextField
+                  name="longitude"
+                  label="Longitude"
+                  placeholder="110.482076919"
+                  disabled={props.isSubmitting}
+                  onChange={props.handleChange}
+                  onBlur={props.handleBlur}
+                  value={props.values.longitude.toString()}
+                  error={props.touched.longitude && props.errors.longitude}
+                  errorText={props.errors.longitude}
                 />
                 <TextField
                   name="large"

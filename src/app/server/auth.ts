@@ -4,7 +4,7 @@ import Credentials from "next-auth/providers/credentials"
 export const authOptions: AuthOptions = {
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60 * 3,
+    maxAge: 60 * 60 * 24,
   },
   pages: {
     signIn: "/login",
@@ -27,7 +27,7 @@ export const authOptions: AuthOptions = {
       session.user.role = token.role
       session.user.user_id = token.user_id
       return session
-    }
+    },
   },
   providers: [
     Credentials({
@@ -54,15 +54,23 @@ export const authOptions: AuthOptions = {
           },
         })
 
-        const data = await response.json()
+        if (response.ok) {
+          const data = await response.json()
 
-        return {
-          id: data.data._id,
-          name: data.data.name,
-          email: data.data.email,
-          role: data.data.role,
-          access_token: data.data.token,
+          if (data.status == 200) {
+            return {
+              id: data.data._id,
+              name: data.data.name,
+              email: data.data.email,
+              role: data.data.role,
+              access_token: data.data.token,
+            }
+          }
+
+          return null
         }
+
+        return null
       },
     }),
   ],

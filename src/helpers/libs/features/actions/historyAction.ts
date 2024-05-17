@@ -26,7 +26,7 @@ export const getHistoryActivities = createAsyncThunk(
 
       if (res.status == 200) {
         const data = await res.json()
-
+        
         return {
           status: {
             success: true,
@@ -114,7 +114,7 @@ export const getHistoryIncomes = createAsyncThunk(
             success: true,
             message: data.message,
           },
-          data: data.data.length == 0 ? [] : data.data,
+          data: data.data == null ? null : data.data,
         }
       }
 
@@ -123,7 +123,7 @@ export const getHistoryIncomes = createAsyncThunk(
           success: false,
           message: "failed",
         },
-        data: [],
+        data: null,
       }
     }
 

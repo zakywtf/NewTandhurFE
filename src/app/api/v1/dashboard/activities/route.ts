@@ -11,7 +11,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
   if (farmerLandId) {
     const response = await fetch(
-      `${baseUrl}/dashboard/list/activities?farmer_land_id=${farmerLandId}`,
+      `${baseUrl}/dashboard/list/activities?farmer_land_id=${farmerLandId}&filter=${filter}`,
       {
         method: "GET",
         headers: {

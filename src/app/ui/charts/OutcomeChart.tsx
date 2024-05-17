@@ -6,10 +6,7 @@ import { getOutcomeDashboard } from "@/helpers/libs/features/actions/dashboardAc
 import { useAppDispatch, useAppSelector } from "@/helpers/libs/hooks"
 import { DropdownData } from "@/interfaces/DropdownProp"
 import { useSearchParams } from "next/navigation"
-import React, {
-    useEffect,
-    useRef
-} from "react"
+import React, { useEffect, useRef } from "react"
 import MenuDropdown from "../dropdowns/MenuDropdown"
 
 const OutcomeLineChart: React.FC = () => {
@@ -128,7 +125,7 @@ const OutcomeLineChart: React.FC = () => {
     <div className="flex flex-col p-6 bg-white shadow-main-4 rounded-[12px]">
       <div className="flex flex-row">
         <span className="font-semibold text-lg text-tand-appr-1 pr-6 border-r-[1px] border-[#EEEEEE] mr-4">
-          Hasil Panen Terkini
+          Pendapatan Panen Terkini
         </span>
         <MenuDropdown
           items={[
