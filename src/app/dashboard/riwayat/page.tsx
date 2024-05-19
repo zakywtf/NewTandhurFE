@@ -514,18 +514,27 @@ const ListIncome: React.FC = () => {
       </div>
       <div className="w-fit my-5 flex flex-col">
         <div className="flex flex-col flex-1">
-          {incomes != null ? (
+          {incomes ? (
             <>
               <span>
-                Biaya Operasional X : Rp. {incomes.total_operating_costs}
+                Biaya Operasional : Rp.{" "}
+                {priceSplitter(
+                  incomes.total_operating_costs?.toString() ?? "0"
+                )}
               </span>
-              <span>Penjualan : Rp. {incomes.total_sellings}</span>
+              <span>
+                Penjualan : Rp.{" "}
+                {priceSplitter(incomes.total_sellings?.toString() ?? "0")}
+              </span>
             </>
           ) : null}
         </div>
         <div className="w-full h-[1px] bg-[#000] my-4" />
         {incomes != null ? (
-          <span>Total Pendapatan : Rp. {incomes.total_incomes}</span>
+          <span>
+            Total Pendapatan : Rp.{" "}
+            {priceSplitter(incomes.total_incomes?.toString() ?? "0")}
+          </span>
         ) : null}
       </div>
     </div>

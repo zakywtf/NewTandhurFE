@@ -7,7 +7,7 @@ import {
 } from "@/helpers/helper"
 import { Payload } from "@/interfaces/payload"
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
-import { getHarvestById, updateHarvest } from "./actions/harvestAction"
+import { getHarvestById, stopHarvest, updateHarvest } from "./actions/harvestAction"
 
 interface HarvestState {
   type: string
@@ -60,6 +60,13 @@ const harvestSlicer = createSlice({
       )
       .addCase(
         updateHarvest.fulfilled,
+        (state, action: PayloadAction<Payload>) => {
+          state.type = action.type
+          state.status = { ...action.payload.status }
+        }
+      )
+      .addCase(
+        stopHarvest.fulfilled,
         (state, action: PayloadAction<Payload>) => {
           state.type = action.type
           state.status = { ...action.payload.status }

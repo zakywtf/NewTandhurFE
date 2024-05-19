@@ -48,7 +48,7 @@ const FormInputPanen: React.FC<FormPanen> = ({
         >
           <div className="flex flex-col grow mt-8 mx-8 overflow-y-scroll no-scrollbar">
             <span className="text-2xl font-semibold text-tand-appr-1 ">
-              {type === "create" ? "Tambah Kegiatan Baru" : "Ubah Data Kegiatan"}
+              {type === "create" ? "Tambah Panen Baru" : "Ubah Data Panen"}
             </span>
             <div className="flex flex-row mt-8 gap-x-6">
               <div className="w-1/2 flex flex-col gap-y-3.5">

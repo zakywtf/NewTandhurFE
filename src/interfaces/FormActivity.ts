@@ -1,12 +1,16 @@
 export type FormActivityData = {
   farmer_land_id: string
-  type_activity: { id: string; name: string } | null
+  type_activity: { _id: string; name: string } | null
   activity_date: string
   operating_costs: number
   treatment: string | null
-  amount: string | number
+  amount: string | number | null
   unit: { id: string; name: string } | null
-  brand: string
+  brand: string | null
+}
+
+export type UpdateFormActivityData = FormActivityData & {
+  activity_id: string
 }
 
 export type TypesData = {
@@ -17,7 +21,7 @@ export type TypesData = {
 export interface FormActivity {
   type?: "create" | "update"
   types: TypesData[]
-  initialValues: FormActivityData
-  onSubmit: (payload: FormActivityData, action: string) => void
+  initialValues: FormActivityData | UpdateFormActivityData
+  onSubmit: (payload: FormActivityData | UpdateFormActivityData, action: string) => void
   onCloseModal: (value: boolean) => void
 }

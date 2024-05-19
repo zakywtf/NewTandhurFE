@@ -114,7 +114,7 @@ export const getHistoryIncomes = createAsyncThunk(
             success: true,
             message: data.message,
           },
-          data: data.data == null ? null : data.data,
+          data: data.data.length == 0 ? null : data.data,
         }
       }
 

@@ -18,6 +18,7 @@ const FormInputKegiatan: React.FC<FormActivity> = ({
 }) => {
   const [currentTab, setCurrentTab] = useState(1)
   const DisplayingErrorMessagesSchema = Yup.object().shape({
+    type_activity: Yup.mixed().required(),
     brand: Yup.string().min(2, "Tulis minimal 2 digit huruf").nullable(),
     treatment: Yup.number()
       .min(1, "Minimal 1 Digit").nullable(),
@@ -59,7 +60,7 @@ const FormInputKegiatan: React.FC<FormActivity> = ({
                       key={crypto.randomUUID()}
                       onClick={() =>
                         props.setFieldValue("type_activity", {
-                          id: type._id,
+                          _id: type._id,
                           name: type.name,
                         })
                       }
@@ -117,7 +118,7 @@ const FormInputKegiatan: React.FC<FormActivity> = ({
                         disabled={props.isSubmitting}
                         onChange={props.handleChange}
                         onBlur={props.handleBlur}
-                        value={props.values.amount.toString()}
+                        value={props.values.amount?.toString() ?? ""}
                         error={props.touched.amount && props.errors.amount}
                         errorText={props.errors.amount}
                       />
@@ -167,7 +168,7 @@ const FormInputKegiatan: React.FC<FormActivity> = ({
                     disabled={props.isSubmitting}
                     onChange={props.handleChange}
                     onBlur={props.handleBlur}
-                    value={props.values.brand}
+                    value={props.values.brand ?? ""}
                     error={props.touched.brand && props.errors.brand}
                     errorText={props.errors.brand}
                   />
@@ -191,7 +192,7 @@ const FormInputKegiatan: React.FC<FormActivity> = ({
                   buttonType="primary"
                   label="Lanjutkan"
                   disabled={
-                    !props.dirty || (props.errors.type_activity ? true : false)
+                    props.values.type_activity == null ? true : false
                   }
                   onClick={() => setCurrentTab(2)}
                 />

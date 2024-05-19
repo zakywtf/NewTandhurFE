@@ -1,4 +1,4 @@
-import { GET_HARVEST_BY_ID, UPDATE_HARVEST } from "@/helpers/const"
+import { GET_HARVEST_BY_ID, STOP_HARVEST, UPDATE_HARVEST } from "@/helpers/const"
 import { UpdateFormPanenData } from "@/interfaces/FormPanen"
 import { createAsyncThunk } from "@reduxjs/toolkit"
 
@@ -81,6 +81,44 @@ export const updateHarvest = createAsyncThunk(
     }
 
     const response = await create(data)
+
+    return response
+  }
+)
+
+export const stopHarvest = createAsyncThunk(
+  STOP_HARVEST,
+  async (id: string) => {
+    const stop = async (id: string) => {
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/harvests/stop-cultivation/${id}`
+
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+      if (res.status == 200) {
+        const data = await res.json()
+
+        return {
+          status: {
+            success: true,
+            message: data.message,
+          },
+        }
+      }
+
+      return {
+        status: {
+          success: false,
+          message: "failed",
+        },
+      }
+    }
+
+    const response = await stop(id)
 
     return response
   }

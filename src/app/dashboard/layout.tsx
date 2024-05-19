@@ -29,6 +29,12 @@ const navigation = [
     children: [],
   },
   {
+    name: "Penjualan",
+    icon: DocumentIcon,
+    href: "/dashboard/penjualan",
+    children: [],
+  },
+  {
     name: "Riwayat",
     icon: DocumentIcon,
     href: "/dashboard/riwayat",

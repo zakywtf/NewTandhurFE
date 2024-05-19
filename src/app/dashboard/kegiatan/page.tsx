@@ -6,8 +6,11 @@ import Loading from "@/app/ui/loading"
 import Modal from "@/app/ui/modals/Modal"
 import {
   CREATE_ACTIVITY_FULFILLED,
+  DELETE_ACTIVITY_FULFILLED,
+  GET_ACTIVITY_BY_ID_FULFILLED,
   GET_ALL_ACTIVITY_FULFILLED,
   INIT,
+  UPDATE_ACTIVITY_FULFILLED,
 } from "@/helpers/const"
 import {
   createActivity,
@@ -17,7 +20,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/helpers/libs/hooks"
 import { FormActivityData } from "@/interfaces/FormActivity"
 import { PlusIcon } from "@heroicons/react/solid"
-import { useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import Calendar, { TileArgs } from "react-calendar"
 import moment from "moment"
@@ -34,6 +37,7 @@ export default function Page() {
     status: activityStatus,
     types,
   } = useAppSelector((state) => state.activity)
+  const router = useRouter()
   const searchParams = useSearchParams()
   const [value, onChange] = useState<Value>(new Date())
   const [showModal, setShowModal] = useState(false)
@@ -51,10 +55,14 @@ export default function Page() {
   }
 
   const hightlightDates = ({ activeStartDate, date, view }: TileArgs) => {
-    if (activityDates.length != 0) {
+    if (activities.length != 0) {
       const customDate = moment(date).format("YYYY-MM-DD")
-      const isFind = activityDates.find((date) => date == customDate) ?? null
-      
+      const isFind =
+        activities.find(
+          (activity) =>
+            moment(activity.activity_date).format("YYYY-MM-DD") == customDate
+        ) ?? null
+
       if (isFind) {
         return "react-calendar-highlight-date"
       }
@@ -69,23 +77,28 @@ export default function Page() {
     const farmerLandId = searchParams.get("farmer_land_id") ?? ""
     if (activityType == GET_ALL_ACTIVITY_FULFILLED) {
       setShowModal(false)
-      if (activities.length != 0) {
-        const dates = activities.map((activity) =>
-          moment(activity.activity_date).format("YYYY-MM-DD")
-        )
-        setActivityDates(dates)
-      }
+      // if (activities.length != 0) {
+      //   const dates = activities.map((activity) =>
+      //     moment(activity.activity_date).format("YYYY-MM-DD")
+      //   )
+      //   setActivityDates(dates)
+      // }
       setIsLoading(false)
     }
 
-    if (activityType == CREATE_ACTIVITY_FULFILLED && types.length != 0) {
+    if (
+      (activityType == CREATE_ACTIVITY_FULFILLED ||
+        activityType == UPDATE_ACTIVITY_FULFILLED ||
+        activityType == DELETE_ACTIVITY_FULFILLED ||
+        activityType == GET_ACTIVITY_BY_ID_FULFILLED) &&
+      types.length != 0
+    ) {
       dispatch(getActivities(farmerLandId))
       setIsLoading(false)
     }
     if (activityType == INIT && activities.length == 0 && types.length == 0) {
       dispatch(getActivities(farmerLandId))
       dispatch(getActivityTypes())
-    
     }
   }, [activities, activityType, activityStatus])
 
@@ -110,6 +123,25 @@ export default function Page() {
           onChange={onChange}
           value={value}
           tileClassName={hightlightDates}
+          onClickDay={(value) => {
+            if (activities.length != 0) {
+              const customDate = moment(value).format("YYYY-MM-DD")
+              const activity =
+                activities.find(
+                  (activity) =>
+                    moment(activity.activity_date).format("YYYY-MM-DD") ==
+                    customDate
+                ) ?? null
+
+              if (activity) {
+                router.push(
+                  `kegiatan/${activity._id}?farmer_land_id=${searchParams.get(
+                    "farmer_land_id"
+                  )}`
+                )
+              }
+            }
+          }}
         />
       </div>
 
@@ -120,7 +152,7 @@ export default function Page() {
             farmer_land_id: "",
             type_activity: null,
             activity_date: "",
-            amount: 0,
+            amount: null,
             brand: "",
             unit: null,
             operating_costs: 0,

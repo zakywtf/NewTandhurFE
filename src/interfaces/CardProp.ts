@@ -11,3 +11,8 @@ export type CardProps = {
   link?: string
   onClick?: () => void
 }
+
+export type CardPanenProps = {
+  isStop?: boolean
+  handleStop?: () => void
+} & CardProps

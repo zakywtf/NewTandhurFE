@@ -1,13 +1,15 @@
-import { CardProps } from "@/interfaces/CardProp"
+import { CardPanenProps, CardProps } from "@/interfaces/CardProp"
 import { PencilIcon } from "@heroicons/react/solid"
 import Link from "next/link"
 
-const CardPanen: React.FC<CardProps> = ({
+const CardPanen: React.FC<CardPanenProps> = ({
   link,
   name,
   data,
+  isStop,
   isDetail,
   onClick,
+  handleStop,
 }) => {
   return (
     <div className="flex flex-col p-6 bg-white shadow-main-4 rounded-[12px]">
@@ -53,6 +55,14 @@ const CardPanen: React.FC<CardProps> = ({
           )
         })}
       </div>
+
+      {isStop == false && (
+        <div onClick={handleStop} className={`flex flex-row justify-end cursor-pointer`}>
+          <span className="text-sm text-tand-error">
+            Selesai Budidaya
+          </span>
+        </div>
+      )}
     </div>
   )
 }
