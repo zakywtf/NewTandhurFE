@@ -26,7 +26,7 @@ const OutcomeLineChart: React.FC = () => {
       ctx.save()
       ctx.font = "12px Poppins"
       ctx.fillStyle = "#18181966"
-      ctx.fillText("Jumlah Panen", 0, top - 25)
+      ctx.fillText("Rp", 0, top - 25)
 
       ctx.restore()
     },
@@ -125,7 +125,7 @@ const OutcomeLineChart: React.FC = () => {
     <div className="flex flex-col p-6 bg-white shadow-main-4 rounded-[12px]">
       <div className="flex flex-row">
         <span className="font-semibold text-lg text-tand-appr-1 pr-6 border-r-[1px] border-[#EEEEEE] mr-4">
-          Pendapatan Panen Terkini
+          Pengeluaran/Operasional
         </span>
         <MenuDropdown
           items={[

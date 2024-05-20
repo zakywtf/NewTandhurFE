@@ -1,18 +1,14 @@
 "use client"
 
 import { Disclosure, DisclosureButton } from "@headlessui/react"
-import { LogoutIcon } from "@heroicons/react/outline"
 import {
   DocumentIcon,
-  HomeIcon,
-  RefreshIcon,
-  UserIcon,
+  HomeIcon
 } from "@heroicons/react/solid"
-import { deleteCookie } from "cookies-next"
-import { SessionProvider, signOut } from "next-auth/react"
+import { SessionProvider } from "next-auth/react"
 import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 
 const navigation = [
   { name: "Beranda", icon: HomeIcon, href: "/dashboard", children: [] },
@@ -42,11 +38,12 @@ const navigation = [
   },
 ]
 
-const handleSignOut = async () => {
-  await signOut()
-  deleteCookie("selected-commodity")
-  deleteCookie("farmer")
-}
+// Logout
+// const handleSignOut = async () => {
+//   await signOut()
+//   deleteCookie("selected-commodity")
+//   deleteCookie("farmer")
+// }
 
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ")
@@ -146,38 +143,6 @@ export default function Layout({
                       </Disclosure>
                     )
                   )}
-
-                  <div className=" h-[1px] bg-[#EEEEEE] my-4 mx-6" />
-                  <Link
-                    href="/profil"
-                    className={classNames(
-                      "bg-white text-tand-appr-1 hover:bg-gray-50",
-                      "group w-full flex gap-x-2 items-center py-3 px-6 text-sm font-semibold"
-                    )}
-                  >
-                    <UserIcon className="h-6 w-6" />
-                    <span>Profil</span>
-                  </Link>
-                  <Link
-                    href="/ubah_kata_sandi"
-                    className={classNames(
-                      "bg-white text-tand-appr-1 hover:bg-gray-50",
-                      "group w-full flex gap-x-2 items-center py-3 px-6 text-sm font-semibold"
-                    )}
-                  >
-                    <RefreshIcon className="h-6 w-6" />
-                    <span>Ubah Kata Sandi</span>
-                  </Link>
-                  <span
-                    onClick={handleSignOut}
-                    className={classNames(
-                      "bg-white text-tand-appr-1 mt-2 hover:bg-gray-50",
-                      "group cursor-pointer w-full flex gap-x-2 items-center py-3 px-6 text-sm font-semibold"
-                    )}
-                  >
-                    <LogoutIcon className="h-6 w-6" />
-                    <span>Keluar</span>
-                  </span>
                 </div>
               </div>
             </div>

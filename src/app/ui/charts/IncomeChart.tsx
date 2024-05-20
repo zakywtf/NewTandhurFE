@@ -26,7 +26,7 @@ const IncomeLineChart: React.FC = () => {
       ctx.save()
       ctx.font = "12px Poppins"
       ctx.fillStyle = "#18181966"
-      ctx.fillText("Jumlah Panen", 0, top - 25)
+      ctx.fillText("Rp", 0, top - 25)
 
       ctx.restore()
     },

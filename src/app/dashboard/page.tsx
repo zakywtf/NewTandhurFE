@@ -46,55 +46,6 @@ export default function Page() {
       <HarvestLineChart />
       <IncomeLineChart />
       <OutcomeLineChart />
-      <ActivityTable />
-    </div>
-  )
-}
-
-const ActivityTable: React.FC = () => {
-  const { type, status, activity_data } = useAppSelector(
-    (state) => state.dashboard
-  )
-  const dispatch = useAppDispatch()
-  const searchParams = useSearchParams()
-  return (
-    <div className="flex flex-col p-6 bg-white shadow-main-4 rounded-[12px]">
-      <div className="flex flex-row">
-        <span className="font-semibold text-lg text-tand-appr-1 pr-6 border-r-[1px] border-[#EEEEEE] mr-4">
-          List Kegiatan Terkini
-        </span>
-        <MenuDropdown
-          items={[
-            { id: "year", name: "Per Tahun" },
-            { id: "month", name: "Per Bulan" },
-          ]}
-          onChange={(selectedItem) => {
-            const farmerLandId = searchParams.get("farmer_land_id") ?? ""
-            dispatch(
-              getActivityDashboard({
-                farmer_land_id: farmerLandId,
-                category_time: selectedItem.id,
-              })
-            )
-          }}
-        />
-      </div>
-      <div className="flex flex-wrap">
-        <span className="w-2/4 text-lg">Nama Kegiatan</span>
-        <span className="w-2/4 text-lg">Tanggal Kegiatan</span>
-        {activity_data.map((activity) => {
-          return (
-            <>
-              <span key={crypto.randomUUID()} className="w-2/4">
-                {activity.activity_name}
-              </span>
-              <span key={crypto.randomUUID()} className="w-2/4">
-                {convertToIndonesiaTanggal(activity.activity_date)}
-              </span>
-            </>
-          )
-        })}
-      </div>
     </div>
   )
 }
