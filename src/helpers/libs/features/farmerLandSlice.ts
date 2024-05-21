@@ -9,8 +9,16 @@ interface FarmerLandState {
     success: boolean
     message: string | null
   }
-  data: any[]
+  data: any[],
+  total_item: number
 }
+
+interface FarmerLandPayload extends Omit<Payload, 'data'> {
+  data: {
+    items: any[],
+    total_item: number
+  }
+} 
 
 const initialState: FarmerLandState = {
   type: INIT,
@@ -19,6 +27,7 @@ const initialState: FarmerLandState = {
     message: null,
   },
   data: [],
+  total_item: 0
 }
 
 const farmerLandSlicer = createSlice({
@@ -36,10 +45,11 @@ const farmerLandSlicer = createSlice({
       )
       .addCase(
         getFarmers.fulfilled,
-        (state, action: PayloadAction<Payload>) => {
+        (state, action: PayloadAction<FarmerLandPayload>) => {
           state.type = action.type
           state.status = { ...action.payload.status }
-          state.data = action.payload.data ?? []
+          state.data = action.payload.data.items
+          state.total_item = action.payload.data.total_item
         }
       )
   },

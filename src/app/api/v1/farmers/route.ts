@@ -5,14 +5,17 @@ import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest, res: NextResponse) {
   const session = await getServerSession(authOptions)
+  const { searchParams } = new URL(req.url)
   const cookie = cookies()
   const cookieCommodity = cookie.get("selected-commodity")
+  const page = searchParams.get('page') ?? 1
+  const limit = searchParams.get('limit') ?? 10
 
   if (cookieCommodity != undefined) {
     const baseUrl = process.env.BASE_API_EXT_URL
     const commodityJson = JSON.parse(cookieCommodity.value || "")
     const response = await fetch(
-      `${baseUrl}/farmer-lands/pagination/1/10?commodity_id=${commodityJson.id}`,
+      `${baseUrl}/farmer-lands/pagination/${page}/${limit}?commodity_id=${commodityJson.id}`,
       {
         method: "GET",
         headers: {

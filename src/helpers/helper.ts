@@ -13,6 +13,7 @@ import {
   GET_MASTER_PROVINSI,
 } from "./const"
 import { FormPanenData } from "@/interfaces/FormPanen"
+import { Pagination } from "@/types/types"
 
 const ifemptyData = (data: any, indexArray: any[], value?: any): any => {
   try {
@@ -252,47 +253,11 @@ const createFarmerLand = createAsyncThunk(
   }
 )
 
-const getFarmers = createAsyncThunk(GET_ALL_FARMER, async () => {
-  const getAll = async () => {
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/farmers`
-    const res = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-
-    if (res.status == 200) {
-      const data = await res.json()
-
-      return {
-        status: {
-          success: true,
-          message: data.message,
-        },
-        data: data.data.length == 0 ? [] : data.data.datas,
-      }
-    }
-
-    return {
-      status: {
-        success: false,
-        message: "failed",
-      },
-      data: [],
-    }
-  }
-
-  const response = await getAll()
-
-  return response
-})
-
-const getHarvests = createAsyncThunk(
-  GET_ALL_HARVEST,
-  async (farmerLandId: string) => {
-    const getAll = async (farmerLandId: string) => {
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/harvests?farmer_land_id=${farmerLandId}`
+const getFarmers = createAsyncThunk(
+  GET_ALL_FARMER,
+  async (data?: Pagination) => {
+    const getAll = async ({ page, limit }: Pagination) => {
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/farmers?page=${page}&limit=${limit}`
       const res = await fetch(url, {
         method: "GET",
         headers: {
@@ -308,7 +273,10 @@ const getHarvests = createAsyncThunk(
             success: true,
             message: data.message,
           },
-          data: data.data.length == 0 ? [] : data.data.datas,
+          data: {
+            items: data.data.length == 0 ? [] : data.data.datas,
+            total_item: data.data.total,
+          },
         }
       }
 
@@ -317,11 +285,59 @@ const getHarvests = createAsyncThunk(
           success: false,
           message: "failed",
         },
-        data: [],
+        data: {
+          items: [],
+          total_item: 0,
+        },
       }
     }
 
-    const response = await getAll(farmerLandId)
+    const response = await getAll(data ?? { page: 1, limit: 10 })
+
+    return response
+  }
+)
+
+const getHarvests = createAsyncThunk(
+  GET_ALL_HARVEST,
+  async (data: Pagination) => {
+    const getAll = async ({ page, limit, farmer_land_id }: Pagination) => {
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/harvests?page=${page}&limit=${limit}&farmer_land_id=${farmer_land_id}`
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+      if (res.status == 200) {
+        const data = await res.json()
+
+        return {
+          status: {
+            success: true,
+            message: data.message,
+          },
+          data: {
+            items: data.data.length == 0 ? [] : data.data.datas,
+            total_item: data.data.total,
+          },
+        }
+      }
+
+      return {
+        status: {
+          success: false,
+          message: "failed",
+        },
+        data: {
+          items: [],
+          total_item: 0,
+        },
+      }
+    }
+
+    const response = await getAll(data)
 
     return response
   }

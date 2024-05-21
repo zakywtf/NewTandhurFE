@@ -8,13 +8,14 @@ import {
   FormPenjualanData,
   UpdateFormPenjualanData,
 } from "@/interfaces/FormPenjualan"
+import { Pagination } from "@/types/types"
 import { createAsyncThunk } from "@reduxjs/toolkit"
 
 export const getSells = createAsyncThunk(
   GET_ALL_SELL,
-  async (farmerLandId: string) => {
-    const getAll = async (farmerLandId: string) => {
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/sells?farmer_land_id=${farmerLandId}`
+  async (data: Pagination) => {
+    const getAll = async ({page, limit, farmer_land_id}: Pagination) => {
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/sells?page=${page}&limit=${limit}&farmer_land_id=${farmer_land_id}`
       const res = await fetch(url, {
         method: "GET",
         headers: {
@@ -30,7 +31,10 @@ export const getSells = createAsyncThunk(
             success: true,
             message: data.message,
           },
-          data: data.data.length == 0 ? [] : data.data.datas,
+          data: {
+            items: data.data.length == 0 ? [] : data.data.datas,
+            total_item: data.data.total,
+          },
         }
       }
 
@@ -39,11 +43,14 @@ export const getSells = createAsyncThunk(
           success: false,
           message: "failed",
         },
-        data: [],
+        data: {
+          items: [],
+          total_item: 0,
+        },
       }
     }
 
-    const response = await getAll(farmerLandId)
+    const response = await getAll(data)
 
     return response
   }

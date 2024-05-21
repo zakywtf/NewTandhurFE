@@ -17,7 +17,15 @@ interface HarvestState {
   }
   data: any[]
   detail: any | null
+  total_item: number
 }
+
+interface HarvestPayload extends Omit<Payload, 'data'> {
+  data: {
+    items: any[],
+    total_item: number
+  }
+} 
 
 const initialState: HarvestState = {
   type: INIT,
@@ -27,6 +35,7 @@ const initialState: HarvestState = {
   },
   data: [],
   detail: null,
+  total_item: 0,
 }
 
 const harvestSlicer = createSlice({
@@ -37,10 +46,10 @@ const harvestSlicer = createSlice({
     builder
       .addCase(
         getHarvests.fulfilled,
-        (state, action: PayloadAction<Payload>) => {
+        (state, action: PayloadAction<HarvestPayload>) => {
           state.type = action.type
-          state.status = { ...action.payload.status }
-          state.data = action.payload.data ?? []
+          state.data = action.payload.data.items
+          state.total_item = action.payload.data.total_item
         }
       )
       .addCase(

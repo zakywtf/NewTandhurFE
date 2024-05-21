@@ -16,9 +16,11 @@ import IncomeLineChart from "../ui/charts/IncomeChart"
 import OutcomeLineChart from "../ui/charts/OutcomeChart"
 import MenuDropdown from "../ui/dropdowns/MenuDropdown"
 import Loading from "../ui/loading"
+import { RESET_STATE } from "@/helpers/const"
 
 export default function Page() {
   const commodity = useCommodity()
+  const dispatch = useAppDispatch()
   const router = useRouter()
   const farmer = useFarmer()
   const [isLoading, setIsLoading] = useState(true)
@@ -35,9 +37,14 @@ export default function Page() {
       <h1 className="text-3xl font-semibold mt-10">
         Komoditas {commodity == null ? "Belum Dipilih" : commodity.name}
       </h1>
-      <h2 className="text-2xl font-semibold mt-2">{farmer == null ? "Petani Belum Dipilih" : `Petani ${farmer}`}</h2>
+      <h2 className="text-2xl font-semibold mt-2">
+        {farmer == null ? "Petani Belum Dipilih" : `Petani ${farmer}`}
+      </h2>
       <div
-        onClick={() => router.push("/")}
+        onClick={() => {
+          dispatch({ type: RESET_STATE })
+          router.push("/")
+        }}
         className="flex items-center gap-2 text-lg mt-2 text-tand-1 cursor-pointer"
       >
         <ChevronDoubleLeftIcon className="w-5 h-5 text-tand-2" />

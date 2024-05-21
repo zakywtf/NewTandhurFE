@@ -1,7 +1,12 @@
 import { INIT } from "@/helpers/const"
 import { Payload } from "@/interfaces/payload"
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
-import { createSell, getSellById, getSells, updateSell } from "./actions/sellingAction"
+import {
+  createSell,
+  getSellById,
+  getSells,
+  updateSell,
+} from "./actions/sellingAction"
 
 interface SellState {
   type: string
@@ -11,6 +16,14 @@ interface SellState {
   }
   data: any[]
   detail: any | null
+  total_item: number
+}
+
+interface SellPayload extends Omit<Payload, "data"> {
+  data: {
+    items: any[]
+    total_item: number
+  }
 }
 
 const initialState: SellState = {
@@ -21,6 +34,7 @@ const initialState: SellState = {
   },
   data: [],
   detail: null,
+  total_item: 0,
 }
 
 const sellingSlicer = createSlice({
@@ -31,10 +45,11 @@ const sellingSlicer = createSlice({
     builder
       .addCase(
         getSells.fulfilled,
-        (state, action: PayloadAction<Payload>) => {
+        (state, action: PayloadAction<SellPayload>) => {
           state.type = action.type
           state.status = { ...action.payload.status }
-          state.data = action.payload.data ?? []
+          state.data = action.payload.data.items
+          state.total_item = action.payload.data.total_item
         }
       )
       .addCase(

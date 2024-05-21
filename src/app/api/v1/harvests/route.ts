@@ -6,11 +6,13 @@ export async function GET(req: NextRequest, res: NextResponse) {
   const session = await getServerSession(authOptions)
   const { searchParams } = new URL(req.url)
   const farmerLandId = searchParams.get("farmer_land_id")
+  const page = searchParams.get('page') ?? 1
+  const limit = searchParams.get('limit') ?? 10
   const baseUrl = process.env.BASE_API_EXT_URL
 
   if (farmerLandId) {
     const response = await fetch(
-      `${baseUrl}/harvest/pagination/1/10?farmer_land_id=${farmerLandId}`,
+      `${baseUrl}/harvest/pagination/${page}/${limit}?farmer_land_id=${farmerLandId}`,
       {
         method: "GET",
         headers: {

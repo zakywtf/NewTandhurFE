@@ -6,13 +6,14 @@ import Button from "@/app/ui/fields/Button"
 import FormInputPanen from "@/app/ui/forms/FormInputPanen"
 import Loading from "@/app/ui/loading"
 import Modal from "@/app/ui/modals/Modal"
+import CardPagination from "@/app/ui/paginations/CardPagination"
 import {
   CREATE_HARVEST_FULFILLED,
   GET_ALL_HARVEST_FULFILLED,
   GET_HARVEST_BY_ID_FULFILLED,
   INIT,
   STOP_HARVEST_FULFILLED,
-  UPDATE_HARVEST_FULFILLED
+  UPDATE_HARVEST_FULFILLED,
 } from "@/helpers/const"
 import {
   convertToIndonesiaTanggal,
@@ -20,9 +21,6 @@ import {
   getHarvests,
 } from "@/helpers/helper"
 import { stopHarvest } from "@/helpers/libs/features/actions/harvestAction"
-import {
-  getSells
-} from "@/helpers/libs/features/actions/sellingAction"
 import { useAppDispatch, useAppSelector, useFarmer } from "@/helpers/libs/hooks"
 import { FormPanenData } from "@/interfaces/FormPanen"
 import { PlusIcon } from "@heroicons/react/solid"
@@ -34,6 +32,7 @@ export default function Page() {
     data: harvestData,
     status: harvestStatus,
     type: harvestType,
+    total_item: harvestTotalItems,
   } = useAppSelector((state) => state.harvest)
 
   const dispatch = useAppDispatch()
@@ -43,6 +42,12 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(true)
   const [showAlert, setShowAlert] = useState(false)
   const [harvestId, setHarvestId] = useState(null)
+  const [paginationData, setPaginationData] = useState<{
+    page: number
+    isHidden: boolean
+    isMaxPage: boolean
+    items: any[]
+  }>({ page: 1, isHidden: true, isMaxPage: false, items: [] })
 
   const handleSubmitCreate = async (payload: FormPanenData, action: any) => {
     setIsLoading(true)
@@ -65,16 +70,25 @@ export default function Page() {
     const farmerLandId = searchParams.get("farmer_land_id")
     if (farmerLandId) {
       if (harvestType == INIT) {
-        dispatch(getSells(farmerLandId))
-        dispatch(getHarvests(farmerLandId))
+        dispatch(
+          getHarvests({ page: 1, limit: 10, farmer_land_id: farmerLandId })
+        )
       }
-
       if (harvestType == GET_ALL_HARVEST_FULFILLED) {
         setIsLoading(false)
         setHarvestId(null)
       }
       if (harvestType == CREATE_HARVEST_FULFILLED) {
-        dispatch(getHarvests(farmerLandId))
+        setPaginationData({
+          page: 1,
+          isHidden: true,
+          isMaxPage: false,
+          items: [],
+        })
+        dispatch(
+          getHarvests({ page: 1, limit: 10, farmer_land_id: farmerLandId })
+        )
+
         setIsLoading(false)
         setShowModal(false)
       }
@@ -83,10 +97,63 @@ export default function Page() {
         harvestType == UPDATE_HARVEST_FULFILLED ||
         harvestType == STOP_HARVEST_FULFILLED
       ) {
-        dispatch(getHarvests(farmerLandId))
+        setPaginationData({
+          page: 1,
+          isHidden: true,
+          isMaxPage: false,
+          items: [],
+        })
+        dispatch(
+          getHarvests({ page: 1, limit: 10, farmer_land_id: farmerLandId })
+        )
       }
     }
   }, [harvestData, harvestStatus, harvestType])
+
+  useEffect(() => {
+    if (harvestType == GET_ALL_HARVEST_FULFILLED) {
+      const harvests = paginationData.items.concat(harvestData)
+
+      if (harvests.length != 0 && harvests.length <= harvestTotalItems) {
+        if (
+          harvests.length == harvestTotalItems &&
+          paginationData.isMaxPage == false &&
+          paginationData.isHidden == false
+        ) {
+          setPaginationData((prevState) => {
+            return {
+              ...prevState,
+              items: harvests,
+              isMaxPage: true,
+            }
+          })
+        }
+        if (
+          harvests.length == harvestTotalItems &&
+          paginationData.isMaxPage == false &&
+          paginationData.isHidden == true
+        ) {
+          setPaginationData((prevState) => {
+            return {
+              ...prevState,
+              items: harvests,
+            }
+          })
+        }
+        if (
+          harvests.length < harvestTotalItems &&
+          paginationData.isMaxPage == false
+        ) {
+          setPaginationData((prevState) => {
+            return {
+              ...prevState,
+              items: harvests,
+            }
+          })
+        }
+      }
+    }
+  }, [paginationData, harvestTotalItems, harvestData, searchParams])
 
   return (
     <div className="mx-8 flex flex-col gap-2">
@@ -118,33 +185,91 @@ export default function Page() {
       </div>
 
       <div className="gap-y-8 flex flex-col">
-        {harvestData.map((harvest) => {
-          return (
-            <CardPanen
-              key={crypto.randomUUID()}
-              link={`panen/${harvest._id}?farmer_land_id=${searchParams.get(
-                "farmer_land_id"
-              )}`}
-              name={harvest.name}
-              isStop={harvest.isStopCultivation}
-              data={[
-                {
-                  name: "Tanggal Panen",
-                  value: convertToIndonesiaTanggal(harvest.harvest_date),
-                },
-                {
-                  name: "Hasil Panen",
-                  value: `${harvest.amount} ${harvest.unit}`,
-                },
-              ]}
-              handleStop={() => {
-                setHarvestId(harvest._id)
-                setShowAlert(true)
-              }}
-            />
-          )
-        })}
+        {paginationData.isHidden
+          ? paginationData.items.slice(0, 2).map((harvest, index) => {
+              return (
+                <CardPanen
+                  key={crypto.randomUUID()}
+                  link={`panen/${harvest._id}?farmer_land_id=${searchParams.get(
+                    "farmer_land_id"
+                  )}`}
+                  name={harvest.name}
+                  isStop={harvest.isStopCultivation}
+                  data={[
+                    {
+                      name: "Tanggal Panen",
+                      value: convertToIndonesiaTanggal(harvest.harvest_date),
+                    },
+                    {
+                      name: "Hasil Panen",
+                      value: `${harvest.amount} ${harvest.unit}`,
+                    },
+                  ]}
+                  handleStop={() => {
+                    setHarvestId(harvest._id)
+                    setShowAlert(true)
+                  }}
+                />
+              )
+            })
+          : paginationData.items.map((harvest, index) => {
+              return (
+                <CardPanen
+                  key={crypto.randomUUID()}
+                  link={`panen/${harvest._id}?farmer_land_id=${searchParams.get(
+                    "farmer_land_id"
+                  )}`}
+                  name={harvest.name}
+                  isStop={harvest.isStopCultivation}
+                  data={[
+                    {
+                      name: "Tanggal Panen",
+                      value: convertToIndonesiaTanggal(harvest.harvest_date),
+                    },
+                    {
+                      name: "Hasil Panen",
+                      value: `${harvest.amount} ${harvest.unit}`,
+                    },
+                  ]}
+                  handleStop={() => {
+                    setHarvestId(harvest._id)
+                    setShowAlert(true)
+                  }}
+                />
+              )
+            })}
       </div>
+
+      {paginationData.isMaxPage == false && harvestData.length != 0 ? (
+        <CardPagination
+          onClick={() => {
+            if (paginationData.isHidden == true) {
+              setPaginationData((prevState) => {
+                return {
+                  ...prevState,
+                  isHidden: false,
+                }
+              })
+            } else {
+              setIsLoading(true)
+              const farmerLandId = searchParams.get("farmer_land_id") ?? ""
+              dispatch(
+                getHarvests({
+                  page: paginationData.page + 1,
+                  limit: 10,
+                  farmer_land_id: farmerLandId,
+                })
+              )
+              setPaginationData((prevState) => {
+                return {
+                  ...prevState,
+                  page: prevState.page + 1,
+                }
+              })
+            }
+          }}
+        />
+      ) : null}
 
       <Modal isShow={showModal} className="w-modal-3 h-[550px]">
         <FormInputPanen

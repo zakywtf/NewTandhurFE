@@ -1,3 +1,4 @@
+export const RESET_STATE = "RESET_STATE"
 export const INIT: string = "INIT"
 export const GET_MASTER_PROVINSI = "GET_MASTER_PROVINSI"
 export const GET_MASTER_KABUPATEN = "GET_MASTER_KABUPATEN"

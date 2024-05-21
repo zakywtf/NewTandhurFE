@@ -6,11 +6,13 @@ export async function GET(req: NextRequest, res: NextResponse) {
   const session = await getServerSession(authOptions)
   const { searchParams } = new URL(req.url)
   const farmerLandId = searchParams.get("farmer_land_id")
+  const page = searchParams.get("page") ?? 1
+  const limit = searchParams.get("limit") ?? 10
   const baseUrl = process.env.BASE_API_EXT_URL
 
   if (farmerLandId) {
     const response = await fetch(
-      `${baseUrl}/sellings/pagination/1/10?farmer_land_id=${farmerLandId}`,
+      `${baseUrl}/sellings/pagination/${page}/${limit}?farmer_land_id=${farmerLandId}`,
       {
         method: "GET",
         headers: {
@@ -20,9 +22,30 @@ export async function GET(req: NextRequest, res: NextResponse) {
       }
     )
 
-    const body = await response.json()
+    if (response.ok) {
+      const body = await response.json()
 
-    return Response.json(body)
+      if (body.status == 200) {
+        return Response.json(body)
+      }
+
+      return Response.json(body, {
+        status: body.status,
+        statusText: body.message,
+      })
+    }
+
+    return Response.json(
+      {
+        status: response.status,
+        message: response.statusText,
+        data: [],
+      },
+      {
+        status: response.status,
+        statusText: response.statusText,
+      }
+    )
   }
 
   return Response.json(

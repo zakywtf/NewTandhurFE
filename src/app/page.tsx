@@ -13,17 +13,19 @@ import {
 } from "@/helpers/libs/hooks"
 import { FormPetaniData } from "@/interfaces/FormPetani"
 import { PlusIcon } from "@heroicons/react/solid"
+import { setCookie } from "cookies-next"
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import Card from "./ui/cards/Card"
 import Button from "./ui/fields/Button"
 import FormInputPetani from "./ui/forms/FormInputPetani"
 import Loading from "./ui/loading"
 import Modal from "./ui/modals/Modal"
-import { useRouter } from "next/navigation"
-import { setCookie } from "cookies-next"
+import CardPagination from "./ui/paginations/CardPagination"
 
 export default function Page() {
   const {
+    total_item: farmerLandTotalItems,
     data: farmerLandData,
     status: farmerLandStatus,
     type: farmerLandType,
@@ -32,6 +34,13 @@ export default function Page() {
   const router = useRouter()
   const [showModal, setShowModal] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [paginationData, setPaginationData] = useState<{
+    page: number
+    isHidden: boolean
+    isMaxPage: boolean
+    items: any[]
+  }>({ page: 1, isHidden: true, isMaxPage: false, items: [] })
+
   const selectedCommodity = useCommodity()
 
   const handleSubmitCreateFarmerLand = async (
@@ -56,17 +65,58 @@ export default function Page() {
       setIsLoading(true)
     }
     if (farmerLandType == INIT) {
-      dispatch(getFarmers())
+      dispatch(getFarmers({ page: 1, limit: 10 }))
       setIsLoading(true)
     }
     if (farmerLandType == CREATE_FARMER_LAND_FULFILLED) {
-      dispatch(getFarmers())
+      dispatch(getFarmers({ page: 1, limit: 10 }))
       setIsLoading(false)
     }
     if (farmerLandType == GET_ALL_FARMER_FULFILLED) {
       setIsLoading(false)
     }
-  }, [farmerLandData, farmerLandStatus, farmerLandType])
+  }, [farmerLandData, farmerLandStatus, farmerLandType, farmerLandTotalItems])
+
+  useEffect(() => {
+    if (
+      farmerLandType == GET_ALL_FARMER_FULFILLED &&
+      paginationData.items.length != 0
+    ) {
+      const farmerLands = paginationData.items.concat(farmerLandData)
+
+      if (farmerLands.length <= farmerLandTotalItems) {
+        setPaginationData((prevState) => {
+          return {
+            ...prevState,
+            items: prevState.items.concat(farmerLandData),
+          }
+        })
+      }
+
+      if (
+        paginationData.items.length == farmerLandTotalItems &&
+        paginationData.isMaxPage == false
+      ) {
+        setPaginationData((prevState) => {
+          return {
+            ...prevState,
+            isMaxPage: true,
+          }
+        })
+      }
+    } else if (
+      farmerLandType == GET_ALL_FARMER_FULFILLED &&
+      paginationData.items.length == 0
+    ) {
+      setPaginationData((prevState) => {
+        return {
+          ...prevState,
+          items: farmerLandData,
+        }
+      })
+    }
+  }, [paginationData, farmerLandTotalItems, farmerLandData])
+
 
   return (
     <main className="w-[90%] mx-auto min-h-screen">
@@ -91,24 +141,66 @@ export default function Page() {
       </div>
 
       <div className="gap-y-8 flex flex-col">
-        {farmerLandData.map((farmer, index) => {
-          return (
-            <Card
-              key={index}
-              id={farmer._id}
-              name={`Lahan ${farmer.farmer_id.name}`}
-              data={[
-                {
-                  name: "Longitude & latitude",
-                  value: `${farmer.longitude} & ${farmer.latitude}`,
-                },
-                { name: "Luasan Lahan (ha)", value: farmer.large },
-              ]}
-              onClick={() => handleClick(farmer._id, farmer.farmer_id.name)}
-            />
-          )
-        })}
+        {paginationData.isHidden
+          ? paginationData.items.slice(0, 2).map((farmer, index) => {
+              return (
+                <Card
+                  key={index}
+                  id={farmer._id}
+                  name={`Lahan ${farmer.farmer_id.name}`}
+                  data={[
+                    {
+                      name: "Longitude & latitude",
+                      value: `${farmer.longitude} & ${farmer.latitude}`,
+                    },
+                    { name: "Luasan Lahan (ha)", value: farmer.large },
+                  ]}
+                  onClick={() => handleClick(farmer._id, farmer.farmer_id.name)}
+                />
+              )
+            })
+          : paginationData.items.map((farmer, index) => {
+              return (
+                <Card
+                  key={index}
+                  id={farmer._id}
+                  name={`Lahan ${farmer.farmer_id.name}`}
+                  data={[
+                    {
+                      name: "Longitude & latitude",
+                      value: `${farmer.longitude} & ${farmer.latitude}`,
+                    },
+                    { name: "Luasan Lahan (ha)", value: farmer.large },
+                  ]}
+                  onClick={() => handleClick(farmer._id, farmer.farmer_id.name)}
+                />
+              )
+            })}
       </div>
+
+      {paginationData.isMaxPage == false ? (
+        <CardPagination
+          onClick={() => {
+            if (paginationData.isHidden == true) {
+              setPaginationData((prevState) => {
+                return {
+                  ...prevState,
+                  isHidden: false,
+                }
+              })
+            } else {
+              setIsLoading(true)
+              dispatch(getFarmers({ page: paginationData.page + 1, limit: 10 }))
+              setPaginationData((prevState) => {
+                return {
+                  ...prevState,
+                  page: prevState.page + 1,
+                }
+              })
+            }
+          }}
+        />
+      ) : null}
 
       <Modal isShow={showModal} className="w-modal-3 h-[550px]">
         <FormInputPetani

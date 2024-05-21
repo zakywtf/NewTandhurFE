@@ -1,10 +1,7 @@
 "use client"
 
 import { Disclosure, DisclosureButton } from "@headlessui/react"
-import {
-  DocumentIcon,
-  HomeIcon
-} from "@heroicons/react/solid"
+import { DocumentIcon, HomeIcon } from "@heroicons/react/solid"
 import { SessionProvider } from "next-auth/react"
 import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
