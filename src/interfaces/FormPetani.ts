@@ -3,7 +3,7 @@ export type FormPetaniData = {
   name: string
   email: string
   phone: string
-  blok_name: string
+  owner_name: string
   large: string | number
   longitude: number
   latitude: number

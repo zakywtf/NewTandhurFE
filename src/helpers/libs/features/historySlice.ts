@@ -2,15 +2,8 @@ import { INIT } from "@/helpers/const"
 import { Payload } from "@/interfaces/payload"
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import {
-  getHarvestDashboard,
-  getIncomeDashboard,
-  getOutcomeDashboard,
-} from "./actions/dashboardAction"
-import {
-  getHistoryActivities,
-  getHistoryCosts,
-  getHistoryHarvests,
-  getHistoryIncomes,
+  getActiveCycle,
+  getCompleteCycles
 } from "./actions/historyAction"
 
 type CostData = {
@@ -37,6 +30,13 @@ interface PayloadHistoryIncome extends Omit<Payload, "data"> {
   data: IncomeData | null
 }
 
+interface HistoryCyclePayload extends Omit<Payload, 'data'> {
+  data: {
+    items: any[],
+    total_item: number
+  }
+} 
+
 interface HistoryState {
   type: string
   status: {
@@ -47,6 +47,9 @@ interface HistoryState {
   incomes: IncomeData | null
   costs: CostData[]
   harvests: HistoryData
+  data: any | null
+  complete_cycles: any[]
+  total_item: number
 }
 
 const initialState: HistoryState = {
@@ -62,6 +65,9 @@ const initialState: HistoryState = {
     harvest: [],
     total: 0,
   },
+  data: null,
+  complete_cycles: [],
+  total_item: 0
 }
 
 const dashboardSlicer = createSlice({
@@ -71,38 +77,20 @@ const dashboardSlicer = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(
-        getHistoryActivities.fulfilled,
+        getActiveCycle.fulfilled,
         (state, action: PayloadAction<Payload>) => {
           state.type = action.type
           state.status = { ...action.payload.status }
-          state.activities = action.payload.data?.length == 0 ? [] : action.payload.data!
+          state.data = action.payload.data ?? null
         }
       )
       .addCase(
-        getHistoryCosts.fulfilled,
-        (state, action: PayloadAction<Payload>) => {
+        getCompleteCycles.fulfilled,
+        (state, action: PayloadAction<HistoryCyclePayload>) => {
           state.type = action.type
           state.status = { ...action.payload.status }
-          state.costs =
-            action.payload.data == null
-              ? action.payload.data!
-              : action.payload.data
-        }
-      )
-      .addCase(
-        getHistoryHarvests.fulfilled,
-        (state, action: PayloadAction<PayloadHistoryHarvest>) => {
-          state.type = action.type
-          state.status = { ...action.payload.status }
-          state.harvests = action.payload.data
-        }
-      )
-      .addCase(
-        getHistoryIncomes.fulfilled,
-        (state, action: PayloadAction<PayloadHistoryIncome>) => {
-          state.type = action.type
-          state.status = { ...action.payload.status }
-          state.incomes = action.payload.data ?? null
+          state.complete_cycles = action.payload.data.items
+          state.total_item = action.payload.data.total_item
         }
       )
   },

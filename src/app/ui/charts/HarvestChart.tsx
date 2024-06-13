@@ -2,20 +2,15 @@ import { Chart, registerables } from "chart.js"
 import { Line } from "react-chartjs-2"
 Chart.register(...registerables)
 
-import { getHarvestDashboard } from "@/helpers/libs/features/actions/dashboardAction"
-import { useAppDispatch, useAppSelector } from "@/helpers/libs/hooks"
-import { DropdownData } from "@/interfaces/DropdownProp"
-import { useSearchParams } from "next/navigation"
 import React, { useEffect, useRef } from "react"
-import MenuDropdown from "../dropdowns/MenuDropdown"
-import { GET_HARVEST_DASHBOARD_FULFILLED } from "@/helpers/const"
 
-const HarvestLineChart: React.FC = () => {
-  const { type, status, harvest_data } = useAppSelector(
-    (state) => state.dashboard
-  )
-  const dispatch = useAppDispatch()
-  const searchParams = useSearchParams()
+interface HarvestLineChartProps {
+  harvest_data: any[]
+}
+
+const HarvestLineChart: React.FC<HarvestLineChartProps> = ({
+  harvest_data,
+}) => {
   const chartRef = useRef<Chart | null>(null)
   const yScaleText = {
     id: "yScaleText",
@@ -128,21 +123,6 @@ const HarvestLineChart: React.FC = () => {
         <span className="font-semibold text-lg text-tand-appr-1 pr-6 border-r-[1px] border-[#EEEEEE] mr-4">
           Hasil Panen Terkini
         </span>
-        <MenuDropdown
-          items={[
-            { id: "year", name: "Per Tahun" },
-            { id: "month", name: "Per Bulan" },
-          ]}
-          onChange={(selectedItem: DropdownData) => {
-            const farmerLandId = searchParams.get("farmer_land_id") ?? ""
-            dispatch(
-              getHarvestDashboard({
-                farmer_land_id: farmerLandId,
-                category_time: selectedItem.id,
-              })
-            )
-          }}
-        />
       </div>
       <div className="h-[350px]">
         <Line

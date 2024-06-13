@@ -6,7 +6,18 @@ import {
   getHarvestDashboard,
   getIncomeDashboard,
   getOutcomeDashboard,
+  getSummaryDashboard,
 } from "./actions/dashboardAction"
+
+interface HarvestData {
+  x: string
+  y: number
+}
+
+interface ActivityData {
+  activity_name: string
+  activity_date: string
+}
 
 interface DashboardState {
   type: string
@@ -18,16 +29,13 @@ interface DashboardState {
   income_data: HarvestData[]
   outcome_data: HarvestData[]
   activity_data: ActivityData[]
-}
-
-interface HarvestData {
-  x: string
-  y: number
-}
-
-interface ActivityData {
-  activity_name: string
-  activity_date: string
+  summary_data: {
+    farmer_land: string
+    farmer_name: string
+    chart_harvests: any[]
+    chart_incomes: any[]
+    chart_operation_costs: any[]
+  } | null
 }
 
 const initialState: DashboardState = {
@@ -40,6 +48,7 @@ const initialState: DashboardState = {
   income_data: [],
   outcome_data: [],
   activity_data: [],
+  summary_data: null
 }
 
 const dashboardSlicer = createSlice({
@@ -78,6 +87,14 @@ const dashboardSlicer = createSlice({
           state.type = action.type
           state.status = { ...action.payload.status }
           state.activity_data = action.payload.data ?? []
+        }
+      )
+      .addCase(
+        getSummaryDashboard.fulfilled,
+        (state, action: PayloadAction<Payload>) => {
+          state.type = action.type
+          state.status = { ...action.payload.status }
+          state.summary_data = action.payload.data
         }
       )
   },

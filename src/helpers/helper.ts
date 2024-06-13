@@ -5,7 +5,7 @@ import { FormPetaniData } from "../interfaces/FormPetani"
 import {
   CREATE_FARMER_LAND,
   CREATE_HARVEST,
-  GET_ALL_FARMER,
+  GET_ALL_FARMER_LAND,
   GET_ALL_HARVEST,
   GET_MASTER_DESA,
   GET_MASTER_KABUPATEN,
@@ -193,7 +193,7 @@ const createFarmerLand = createAsyncThunk(
   CREATE_FARMER_LAND,
   async (data: FormPetaniData) => {
     const create = async (data: FormPetaniData) => {
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/farmers`
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/farmer-lands`
 
       const res = await fetch(url, {
         method: "POST",
@@ -202,7 +202,7 @@ const createFarmerLand = createAsyncThunk(
           name: data.name,
           email: data.email,
           phone: data.phone,
-          blok_name: data.blok_name,
+          owner_name: data.owner_name,
           large: data.large as number,
           longitude: data.longitude,
           latitude: data.latitude,
@@ -253,11 +253,11 @@ const createFarmerLand = createAsyncThunk(
   }
 )
 
-const getFarmers = createAsyncThunk(
-  GET_ALL_FARMER,
+const getFarmerLands = createAsyncThunk(
+  GET_ALL_FARMER_LAND,
   async (data?: Pagination) => {
     const getAll = async ({ page, limit }: Pagination) => {
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/farmers?page=${page}&limit=${limit}`
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/farmer-lands?page=${page}&limit=${limit}`
       const res = await fetch(url, {
         method: "GET",
         headers: {
@@ -395,7 +395,7 @@ export {
   getMasterKecamatan,
   getMasterProvinsi,
   createFarmerLand,
-  getFarmers,
+  getFarmerLands,
   getHarvests,
   createHarvest,
   ifemptyData,

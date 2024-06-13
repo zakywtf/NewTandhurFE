@@ -1,9 +1,12 @@
 import {
+  GET_ACTIVE_CYCLE,
+  GET_ALL_COMPLETE_CYCLE,
   GET_HISTORY_ACTIVITY,
   GET_HISTORY_COST,
   GET_HISTORY_HARVEST,
   GET_HISTORY_INCOME,
 } from "@/helpers/const"
+import { Pagination } from "@/types/types"
 import { createAsyncThunk } from "@reduxjs/toolkit"
 
 type HistoryFilter = {
@@ -26,7 +29,7 @@ export const getHistoryActivities = createAsyncThunk(
 
       if (res.status == 200) {
         const data = await res.json()
-        
+
         return {
           status: {
             success: true,
@@ -65,7 +68,6 @@ export const getHistoryHarvests = createAsyncThunk(
 
       if (res.status == 200) {
         const data = await res.json()
-        
 
         return {
           status: {
@@ -167,6 +169,98 @@ export const getHistoryCosts = createAsyncThunk(
     }
 
     const response = await get(filter)
+
+    return response
+  }
+)
+
+export const getActiveCycle = createAsyncThunk(
+  GET_ACTIVE_CYCLE,
+  async (farmerLandId: string) => {
+    const get = async (farmerLandId: string) => {
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/histories/cycles?farmer_land_id=${farmerLandId}`
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+      if (res.status == 200) {
+        const data = await res.json()
+        if (data.status == 404) {
+          return {
+            status: {
+              success: true,
+              message: data.message,
+            },
+            data: null,
+          }
+        }
+        return {
+          status: {
+            success: true,
+            message: data.message,
+          },
+          data: data.data == null ? null : data.data,
+        }
+      }
+
+      return {
+        status: {
+          success: false,
+          message: "failed",
+        },
+        data: null,
+      }
+    }
+
+    const response = await get(farmerLandId)
+
+    return response
+  }
+)
+
+export const getCompleteCycles = createAsyncThunk(
+  GET_ALL_COMPLETE_CYCLE,
+  async (data: Pagination) => {
+    const getAll = async ({ page, limit, farmer_land_id }: Pagination) => {
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/histories/complete-cycles?page=${page}&limit=${limit}&farmer_land_id=${farmer_land_id}`
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+      if (res.status == 200) {
+        const data = await res.json()
+
+        return {
+          status: {
+            success: true,
+            message: data.message,
+          },
+          data: {
+            items: data.data.length == 0 ? [] : data.data.datas,
+            total_item: data.data.total,
+          },
+        }
+      }
+
+      return {
+        status: {
+          success: false,
+          message: "failed",
+        },
+        data: {
+          items: [],
+          total_item: 0,
+        },
+      }
+    }
+
+    const response = await getAll(data)
 
     return response
   }

@@ -65,15 +65,13 @@ export default function Page({ params }: { params: { id: string } }) {
             name="Nama Customer"
             isDetail={true}
             data={[
-              { name: "Distributor/pembeli", value: sellData.distributor },
+              { name: "Pembeli", value: `${sellData.buyer_id.name} (${sellData.buyer_id.agency})` },
+              { name: "Jumlah Penjualan", value: `${sellData.amount} (${sellData.unit})` },
               {
                 name: "Tanggal Penjualan",
                 value: convertToIndonesiaTanggal(sellData.selling_date),
               },
-              {
-                name: "Total Harga Penjualan",
-                value: `Rp. ${priceSplitter(sellData.price)}`,
-              },
+              { name: "Total Harga Penjualan", value: `Rp.${priceSplitter(sellData.price)}` },
             ]}
           />
         )}
@@ -86,7 +84,7 @@ export default function Page({ params }: { params: { id: string } }) {
             initialValues={{
               farmer_land_id: sellData.farmer_land_id._id,
               sell_id: params.id,
-              distributor: sellData.distributor,
+              name: sellData.name,
               selling_date: sellData.selling_date,
               amount: sellData.amount,
               unit: {
@@ -95,6 +93,9 @@ export default function Page({ params }: { params: { id: string } }) {
               },
               price: sellData.price,
               proof_payment: sellData.proof_payment,
+              buyer_id: sellData.buyer_id,
+              commodity_id: sellData.commodity_id,
+              cycle_id: sellData.cycle_id
             }}
             onSubmit={handleSubmitUpdate}
             onCloseModal={() => setShowModal(false)}

@@ -66,9 +66,12 @@ export const createSell = createAsyncThunk(
         formData.append("proof_payment", data.proof_payment)
         formData.append("price", data.price.toString())
         formData.append("selling_date", data.selling_date)
-        formData.append("distributor", data.distributor)
+        formData.append("name", data.name)
         formData.append("unit", data.unit?.id ?? "")
         formData.append("amount", data.amount.toString())
+        formData.append("commodity_id", data.commodity_id._id)
+        formData.append("buyer_id", data.buyer_id._id)
+        formData.append("cycle_id", data.cycle_id._id)
 
         const res = await fetch(url, {
           method: "POST",
@@ -158,7 +161,7 @@ export const updateSell = createAsyncThunk(
           proof_payment: data.proof_payment,
           price: data.price,
           selling_date: data.selling_date,
-          distributor: data.distributor,
+          name: data.name,
           unit: data.unit?.id ?? "null",
           amount: data.amount,
         }),

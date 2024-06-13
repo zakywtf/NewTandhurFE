@@ -1,4 +1,5 @@
 import { FormikProps } from "formik"
+import { ReactNode } from "react"
 
 type AutoCompleteData = {
   id: string
@@ -19,4 +20,5 @@ export interface AutoCompleteProp {
   errorText?: string
   listItem: AutoCompleteData[]
   formik: FormikProps<any>
+  children: ReactNode
 }

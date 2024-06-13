@@ -1,5 +1,5 @@
 import { INIT } from "@/helpers/const"
-import { createFarmerLand, getFarmers } from "@/helpers/helper"
+import { createFarmerLand, getFarmerLands } from "@/helpers/helper"
 import { Payload } from "@/interfaces/payload"
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
@@ -44,7 +44,7 @@ const farmerLandSlicer = createSlice({
         }
       )
       .addCase(
-        getFarmers.fulfilled,
+        getFarmerLands.fulfilled,
         (state, action: PayloadAction<FarmerLandPayload>) => {
           state.type = action.type
           state.status = { ...action.payload.status }

@@ -2,6 +2,7 @@
 
 import CardPenjualan from "@/app/ui/cards/CardPenjualan"
 import Button from "@/app/ui/fields/Button"
+import FormInputBuyer from "@/app/ui/forms/FormInputBuyer"
 import FormInputPenjualan from "@/app/ui/forms/FormInputPenjualan"
 import Loading from "@/app/ui/loading"
 import Modal from "@/app/ui/modals/Modal"
@@ -13,12 +14,14 @@ import {
   INIT,
   UPDATE_SELL_FULFILLED,
 } from "@/helpers/const"
-import { convertToIndonesiaTanggal } from "@/helpers/helper"
+import { convertToIndonesiaTanggal, priceSplitter } from "@/helpers/helper"
+import { createBuyer } from "@/helpers/libs/features/actions/buyerAction"
 import {
   createSell,
   getSells,
 } from "@/helpers/libs/features/actions/sellingAction"
 import { useAppDispatch, useAppSelector, useFarmer } from "@/helpers/libs/hooks"
+import { FormBuyerData } from "@/interfaces/FormBuyer"
 import { FormPenjualanData } from "@/interfaces/FormPenjualan"
 import { PlusIcon } from "@heroicons/react/solid"
 import { useSearchParams } from "next/navigation"
@@ -37,6 +40,7 @@ export default function Page() {
   const searchParams = useSearchParams()
   const [showSellModal, setShowSellModal] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [showBuyerModal, setShowBuyerModal] = useState(false)
   const [paginationData, setPaginationData] = useState<{
     page: number
     isHidden: boolean
@@ -50,9 +54,19 @@ export default function Page() {
   ) => {
     setIsLoading(true)
     const farmerLandId = searchParams.get("farmer_land_id")
-    payload.farmer_land_id = farmerLandId ?? ""
-    dispatch(createSell(payload))
 
+    if (farmerLandId) {
+      payload.farmer_land_id = farmerLandId ?? ""
+      dispatch(createSell(payload))
+    }
+
+    action.setSubmitting(true)
+  }
+
+  const handleBuyerCreate = async (payload: FormBuyerData, action: any) => {
+    setIsLoading(true)
+    dispatch(createBuyer(payload))
+    setShowBuyerModal(false)
     action.setSubmitting(true)
   }
 
@@ -143,7 +157,7 @@ export default function Page() {
       <h1 className="text-3xl font-semibold mt-10">Daftar Penjualan</h1>
       <div className="flex justify-between">
         <h2 className="text-2xl font-semibold mt-2">
-          {farmer == null ? "Petani Belum Dipilih" : `Petani ${farmer}`}
+          {farmer == null ? "Lahan Belum Dipilih" : `${farmer.farmerLand}`}
         </h2>
       </div>
 
@@ -167,14 +181,24 @@ export default function Page() {
                   link={`penjualan/${
                     sell._id
                   }?farmer_land_id=${searchParams.get("farmer_land_id")}`}
-                  name={sell.distributor}
+                  name={sell.name}
                   data={[
-                    { name: "Distributor/pembeli", value: sell.distributor },
+                    {
+                      name: "Pembeli",
+                      value: `${sell.buyer_id.name} (${sell.buyer_id.agency})`,
+                    },
+                    {
+                      name: "Jumlah Penjualan",
+                      value: `${sell.amount} (${sell.unit})`,
+                    },
                     {
                       name: "Tanggal Penjualan",
                       value: convertToIndonesiaTanggal(sell.selling_date),
                     },
-                    { name: "Total Harga Penjualan", value: sell.price },
+                    {
+                      name: "Total Harga Penjualan",
+                      value: `Rp.${priceSplitter(sell.price)}`,
+                    },
                   ]}
                 />
               )
@@ -188,12 +212,22 @@ export default function Page() {
                   }?farmer_land_id=${searchParams.get("farmer_land_id")}`}
                   name={sell.distributor}
                   data={[
-                    { name: "Distributor/pembeli", value: sell.distributor },
+                    {
+                      name: "Pembeli",
+                      value: `${sell.buyer_id.name} (${sell.buyer_id.agency})`,
+                    },
+                    {
+                      name: "Jumlah Penjualan",
+                      value: `${sell.amount} (${sell.unit})`,
+                    },
                     {
                       name: "Tanggal Penjualan",
                       value: convertToIndonesiaTanggal(sell.selling_date),
                     },
-                    { name: "Total Harga Penjualan", value: sell.price },
+                    {
+                      name: "Total Harga Penjualan",
+                      value: `Rp.${priceSplitter(sell.price)}`,
+                    },
                   ]}
                 />
               )
@@ -235,15 +269,44 @@ export default function Page() {
         <FormInputPenjualan
           initialValues={{
             farmer_land_id: "",
-            distributor: "",
+            name: "",
             selling_date: "",
             amount: 0,
             unit: null,
             price: 0,
             proof_payment: null,
+            commodity_id: {
+              _id: "",
+              name: "",
+            },
+            buyer_id: {
+              _id: "",
+              name: "",
+            },
+            cycle_id: {
+              _id: "",
+              name: "",
+            },
           }}
           onSubmit={handleSubmitCreateSell}
           onCloseModal={() => setShowSellModal(false)}
+          onOpenBuyerModal={() => setShowBuyerModal(true)}
+        />
+      </Modal>
+
+      <Modal isShow={showBuyerModal} className="w-modal-3 h-[550px]">
+        <FormInputBuyer
+          initialValues={{
+            agency: "",
+            name: "",
+            phone: "",
+            province: null,
+            regencies: null,
+            district: null,
+            village: null,
+          }}
+          onSubmit={handleBuyerCreate}
+          onCloseModal={() => setShowBuyerModal(false)}
         />
       </Modal>
     </div>

@@ -56,13 +56,13 @@ const CardPanen: React.FC<CardPanenProps> = ({
         })}
       </div>
 
-      {isStop == false && (
+      {/* {isStop == false && (
         <div onClick={handleStop} className={`flex flex-row justify-end cursor-pointer`}>
           <span className="text-sm text-tand-error">
             Selesai Budidaya
           </span>
         </div>
-      )}
+      )} */}
     </div>
   )
 }

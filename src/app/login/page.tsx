@@ -1,16 +1,15 @@
 "use client"
 
-import Link from "next/link"
-import Image from "next/image"
 import { useFormik } from "formik"
+import { signIn } from "next-auth/react"
+import Image from "next/image"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 import * as Yup from "yup"
+import Button from "../ui/fields/Button"
 import EmailNomorHPField from "../ui/fields/EmailNoHPField"
 import PasswordField from "../ui/fields/PasswordField"
-import { signIn } from "next-auth/react"
-import Button from "../ui/fields/Button"
-import { useCommodity } from "@/helpers/libs/hooks"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
 import Loading from "../ui/loading"
 
 Yup.addMethod(
@@ -71,7 +70,6 @@ const DisplayingErrorMessagesSchema = Yup.object().shape({
 })
 
 export default function Page() {
-  const selectedCommodity = useCommodity()
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const formik = useFormik({
@@ -85,18 +83,12 @@ export default function Page() {
       await signIn("credentials", {
         username: values.email_no_hp,
         password: values.password,
-        callbackUrl: "/komoditas",
+        callbackUrl: "/",
       })
       actions.resetForm()
     },
     validateOnBlur: false,
   })
-
-  useEffect(() => {
-    if (selectedCommodity == null) {
-      router.push('/komoditas')
-    }
-  },[selectedCommodity])
   
   return (
     <main className="relative w-screen h-screen bg-cover bg-no-repeat bg-[url('/bg_login.png')]">

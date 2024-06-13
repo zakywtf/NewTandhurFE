@@ -7,6 +7,11 @@ import sellingSlice from "./features/sellingSlice"
 import dashboardSlice from "./features/dashboardSlice"
 import historySlice from "./features/historySlice"
 import { RESET_STATE } from "../const"
+import farmerSlice from "./features/farmerSlice"
+import commoditySlice from "./features/commoditySlice"
+import guideSlice from "./features/guideSlice"
+import cycleSlice from "./features/cycleSlice"
+import buyerSlice from "./features/buyerSlice"
 
 const appReducer = combineReducers({
   region: regionSlice,
@@ -16,6 +21,11 @@ const appReducer = combineReducers({
   sell: sellingSlice,
   dashboard: dashboardSlice,
   history: historySlice,
+  farmer: farmerSlice,
+  commodity: commoditySlice,
+  guide: guideSlice,
+  cycle: cycleSlice,
+  buyer: buyerSlice
 })
 
 const rootReducer = (

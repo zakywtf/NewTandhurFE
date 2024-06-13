@@ -1,11 +1,24 @@
 export type FormPenjualanData = {
     farmer_land_id: string
     proof_payment: string | null
-    distributor: string
+    name: string
     price: string | number
     selling_date: string
     unit: { id: string; name: string } | null
     amount: number
+    commodity_id: {
+      _id: string
+      name: string
+    },
+    buyer_id: {
+      _id: string
+      name: string
+    },
+    cycle_id: {
+      _id: string
+      name: string
+    },
+    
   }
   
   export type UpdateFormPenjualanData = FormPenjualanData & {
@@ -17,5 +30,6 @@ export type FormPenjualanData = {
     initialValues: FormPenjualanData | UpdateFormPenjualanData
     onSubmit: (payload: FormPenjualanData | UpdateFormPenjualanData, action: string) => void
     onCloseModal: (value: boolean) => void
+    onOpenBuyerModal?: () => void
   }
   

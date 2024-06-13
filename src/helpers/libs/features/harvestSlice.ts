@@ -1,9 +1,7 @@
 import { INIT } from "@/helpers/const"
 import {
-  createFarmerLand,
   createHarvest,
-  getFarmers,
-  getHarvests,
+  getHarvests
 } from "@/helpers/helper"
 import { Payload } from "@/interfaces/payload"
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"

@@ -31,7 +31,7 @@ const FormInputPetani: React.FC<FormPetani> = ({
     name: Yup.string()
       .min(2, "Tulis minimal 2 digit huruf")
       .required("Mohon isi terlebih dahulu"),
-    blok_name: Yup.string().min(1, "Minimal 1 Huruf").nullable(),
+    owner_name: Yup.string().min(1, "Minimal 1 Huruf").required(),
     large: Yup.number()
       .min(1, "Minimal 1")
       .required("Mohon isi terlebih dahulu"),
@@ -82,8 +82,8 @@ const FormInputPetani: React.FC<FormPetani> = ({
               <div className="w-1/2 flex flex-col gap-y-3.5">
                 <TextField
                   name="name"
-                  label="Nama Petani"
-                  placeholder="Contoh: Budi"
+                  label="Nama Lahan"
+                  placeholder="Contoh: Lahan 1"
                   disabled={props.isSubmitting}
                   onChange={props.handleChange}
                   onBlur={props.handleBlur}
@@ -93,15 +93,15 @@ const FormInputPetani: React.FC<FormPetani> = ({
                 />
 
                 <TextField
-                  name="blok_name"
-                  label="Nama Blok (Tidak Wajib)"
-                  placeholder="Contoh: Blok A"
+                  name="owner_name"
+                  label="Nama Pemilik"
+                  placeholder="Contoh: Budi"
                   disabled={props.isSubmitting}
                   onChange={props.handleChange}
                   onBlur={props.handleBlur}
-                  value={props.values.blok_name}
-                  error={props.touched.blok_name && props.errors.blok_name}
-                  errorText={props.errors.blok_name}
+                  value={props.values.owner_name}
+                  error={props.touched.owner_name && props.errors.owner_name}
+                  errorText={props.errors.owner_name}
                 />
 
                 <DynamicAutoCompleteField
@@ -153,8 +153,7 @@ const FormInputPetani: React.FC<FormPetani> = ({
                   error={props.touched.district && props.errors.district}
                   errorText={props.errors.district}
                 />
-              </div>
-              <div className="w-1/2 flex flex-col gap-y-3.5">
+
                 <DynamicAutoCompleteField
                   parentId={
                     props.values.district && props.values.district.id
@@ -178,6 +177,8 @@ const FormInputPetani: React.FC<FormPetani> = ({
                   error={props.touched.village && props.errors.village}
                   errorText={props.errors.village}
                 />
+              </div>
+              <div className="w-1/2 flex flex-col gap-y-3.5">
                 <TextField
                   name="latitude"
                   label="Latitude"

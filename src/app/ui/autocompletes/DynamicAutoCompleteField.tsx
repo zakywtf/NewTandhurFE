@@ -1,9 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import AutoCompleteField from "./AutoCompleteField"
 import { useAppDispatch, useAppSelector } from "@/helpers/libs/hooks"
-import { GET_MASTER_PROVINSI } from "@/helpers/const"
+import { useEffect, useState } from "react"
+import AutoCompleteField from "./AutoCompleteField"
 
 const DynamicAutoCompleteField = (props: any) => {
   // const { type, data, status} = useSelector((state) => state.master);

@@ -12,6 +12,7 @@ import {
   GET_ALL_HARVEST_FULFILLED,
   GET_HARVEST_BY_ID_FULFILLED,
   INIT,
+  STOP_CYCLE_FULFILLED,
   STOP_HARVEST_FULFILLED,
   UPDATE_HARVEST_FULFILLED,
 } from "@/helpers/const"
@@ -20,7 +21,8 @@ import {
   createHarvest,
   getHarvests,
 } from "@/helpers/helper"
-import { stopHarvest } from "@/helpers/libs/features/actions/harvestAction"
+import { stopCycle } from "@/helpers/libs/features/actions/cycleAction"
+import { getActiveCycle } from "@/helpers/libs/features/actions/historyAction"
 import { useAppDispatch, useAppSelector, useFarmer } from "@/helpers/libs/hooks"
 import { FormPanenData } from "@/interfaces/FormPanen"
 import { PlusIcon } from "@heroicons/react/solid"
@@ -41,7 +43,7 @@ export default function Page() {
   const [showModal, setShowModal] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [showAlert, setShowAlert] = useState(false)
-  const [harvestId, setHarvestId] = useState(null)
+  const { type, status, data } = useAppSelector((state) => state.history)
   const [paginationData, setPaginationData] = useState<{
     page: number
     isHidden: boolean
@@ -58,13 +60,21 @@ export default function Page() {
     action.setSubmitting(true)
   }
 
-  const handleStopCultivation = () => {
-    if (harvestId) {
-      dispatch(stopHarvest(harvestId))
-      setIsLoading(true)
-      setShowAlert(false)
-    }
+  const handleStopCycle = () => {
+    dispatch(stopCycle())
+    setIsLoading(true)
+    setShowAlert(false)
   }
+
+  useEffect(() => {
+    const farmerLandId = searchParams.get("farmer_land_id")
+    if (farmer && farmerLandId && type == INIT) {
+      dispatch(getActiveCycle(farmerLandId))
+    }
+    if (type == STOP_CYCLE_FULFILLED) {
+      setIsLoading(false)
+    }
+  }, [type, farmer, status, data])
 
   useEffect(() => {
     const farmerLandId = searchParams.get("farmer_land_id")
@@ -76,7 +86,6 @@ export default function Page() {
       }
       if (harvestType == GET_ALL_HARVEST_FULFILLED) {
         setIsLoading(false)
-        setHarvestId(null)
       }
       if (harvestType == CREATE_HARVEST_FULFILLED) {
         setPaginationData({
@@ -165,23 +174,35 @@ export default function Page() {
         labelPositive="Ya, hentikan"
         labelNegative="Tidak"
         onClickNegative={() => setShowAlert(false)}
-        onClickPositive={handleStopCultivation}
+        onClickPositive={handleStopCycle}
       />
       <Loading show={isLoading} />
       <h1 className="text-3xl font-semibold mt-10">Daftar Pemanenan</h1>
       <div className="flex justify-between">
         <h2 className="text-2xl font-semibold mt-2">
-          {farmer == null ? "Petani Belum Dipilih" : `Petani ${farmer}`}
+          {farmer == null ? "Lahan Belum Dipilih" : `${farmer.farmerLand}`}
         </h2>
-        <Button
-          buttonType="primary"
-          label="Tambah Hasil Panen"
-          disabled={false}
-          className="ml-auto px-4"
-          width="auto"
-          icon={<PlusIcon className="w-3 h-3 mr-2.5" />}
-          onClick={() => setShowModal(true)}
-        />
+        <div className="flex gap-4">
+          {data && (
+            <Button
+              buttonType="primary"
+              label="Selesai Siklus"
+              disabled={false}
+              className="px-4 bg-tand-error shadow-none text-black hover:bg-tand-error active:bg-tand-error"
+              width="auto"
+              onClick={() => setShowAlert(true)}
+            />
+          )}
+          <Button
+            buttonType="primary"
+            label="Tambah Hasil Panen"
+            disabled={false}
+            className="ml-auto px-4"
+            width="auto"
+            icon={<PlusIcon className="w-3 h-3 mr-2.5" />}
+            onClick={() => setShowModal(true)}
+          />
+        </div>
       </div>
 
       <div className="gap-y-8 flex flex-col">
@@ -205,10 +226,6 @@ export default function Page() {
                       value: `${harvest.amount} ${harvest.unit}`,
                     },
                   ]}
-                  handleStop={() => {
-                    setHarvestId(harvest._id)
-                    setShowAlert(true)
-                  }}
                 />
               )
             })
@@ -231,10 +248,6 @@ export default function Page() {
                       value: `${harvest.amount} ${harvest.unit}`,
                     },
                   ]}
-                  handleStop={() => {
-                    setHarvestId(harvest._id)
-                    setShowAlert(true)
-                  }}
                 />
               )
             })}

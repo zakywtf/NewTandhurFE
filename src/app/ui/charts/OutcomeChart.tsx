@@ -2,19 +2,14 @@ import { Chart, registerables } from "chart.js"
 import { Line } from "react-chartjs-2"
 Chart.register(...registerables)
 
-import { getOutcomeDashboard } from "@/helpers/libs/features/actions/dashboardAction"
-import { useAppDispatch, useAppSelector } from "@/helpers/libs/hooks"
-import { DropdownData } from "@/interfaces/DropdownProp"
-import { useSearchParams } from "next/navigation"
 import React, { useEffect, useRef } from "react"
-import MenuDropdown from "../dropdowns/MenuDropdown"
 
-const OutcomeLineChart: React.FC = () => {
-  const { type, status, outcome_data } = useAppSelector(
-    (state) => state.dashboard
-  )
-  const dispatch = useAppDispatch()
-  const searchParams = useSearchParams()
+interface OutcomeLineChartProps {
+  outcome_data: any[]
+}
+
+const OutcomeLineChart: React.FC<OutcomeLineChartProps> = ({outcome_data}) => {
+
   const chartRef = useRef<Chart | null>(null)
   const yScaleText = {
     id: "yScaleText",
@@ -26,7 +21,7 @@ const OutcomeLineChart: React.FC = () => {
       ctx.save()
       ctx.font = "12px Poppins"
       ctx.fillStyle = "#18181966"
-      ctx.fillText("Rp", 0, top - 25)
+      ctx.fillText("Jumlah Biaya Operasional", 0, top - 25)
 
       ctx.restore()
     },
@@ -127,21 +122,7 @@ const OutcomeLineChart: React.FC = () => {
         <span className="font-semibold text-lg text-tand-appr-1 pr-6 border-r-[1px] border-[#EEEEEE] mr-4">
           Pengeluaran/Operasional
         </span>
-        <MenuDropdown
-          items={[
-            { id: "year", name: "Per Tahun" },
-            { id: "month", name: "Per Bulan" },
-          ]}
-          onChange={(selectedItem: DropdownData) => {
-            const farmerLandId = searchParams.get("farmer_land_id") ?? ""
-            dispatch(
-              getOutcomeDashboard({
-                farmer_land_id: farmerLandId,
-                category_time: selectedItem.id,
-              })
-            )
-          }}
-        />
+       
       </div>
       <div className="h-[350px]">
         <Line

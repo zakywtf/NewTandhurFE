@@ -87,7 +87,12 @@ export default function Page() {
           className="w-1/4"
           label={"Pilih Pertanian"}
           name={"pertanian"}
-          listItem={commodities.pertanian}
+          listItem={[
+            {
+              id: "6659aed4bdb56e4139aabe77",
+              name: "Kelapa"
+            }
+          ]}
           onChange={(value) => {
             setCommodity(value)
           }}

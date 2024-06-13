@@ -9,6 +9,7 @@ import {
   getActivitytById,
   updateActivity,
 } from "./actions/activityAction"
+import { createCycle } from "./actions/cycleAction"
 
 interface ActivityState {
   type: string
@@ -78,6 +79,13 @@ const activitySlicer = createSlice({
       )
       .addCase(
         deleteActivity.fulfilled,
+        (state, action: PayloadAction<Payload>) => {
+          state.type = action.type
+          state.status = { ...action.payload.status }
+        }
+      )
+      .addCase(
+        createCycle.fulfilled,
         (state, action: PayloadAction<Payload>) => {
           state.type = action.type
           state.status = { ...action.payload.status }
