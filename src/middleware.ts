@@ -6,7 +6,6 @@ export default withAuth(
     const { nextUrl, nextauth } = req
     const isAuthenticated = nextauth.token
     if (isAuthenticated) {
-      
       if (
         nextUrl.pathname == "/register" ||
         nextUrl.pathname == "/lupa-kata-sandi"
@@ -15,7 +14,6 @@ export default withAuth(
       }
 
       if (nextUrl.pathname == "/login") {
-        
         return NextResponse.redirect(new URL("/", req.url))
       }
       return NextResponse.next()
@@ -38,5 +36,20 @@ export default withAuth(
 )
 
 export const config = {
-  matcher: ["/", "/login", "/dashboard/:path*", "/api/v1/:path*"],
+  matcher: [
+    "/",
+    "/login",
+    "/dashboard/:path*",
+    "/api/v1/activities/:path*",
+    "/api/v1/buyers/:path*",
+    "/api/v1/commodity/:path*",
+    "/api/v1/cultivation-guide/:path*",
+    "/api/v1/cycles/:path*",
+    "/api/v1/dashboard/:path*",
+    "/api/v1/farmer-lands/:path*",
+    "/api/v1/farmers/:path*",
+    "/api/v1/harvests/:path*",
+    "/api/v1/histories/:path*",
+    "/api/v1/sells/:path*",
+  ],
 }

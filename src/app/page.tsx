@@ -148,7 +148,7 @@ export default function Page() {
             buttonType="primary"
             label="Logout"
             disabled={false}
-            className="px-4 bg-[#D9D9D9] shadow-none text-[#000] hover:bg-[#D9D9D9] active:bg-[#D9D9D9]"
+            className="px-4 bg-tand-appr-5 shadow-none text-[#000] hover:bg-tand-appr-5 active:bg-tand-appr-5"
             width="auto"
             onClick={handleLogout}
           />
