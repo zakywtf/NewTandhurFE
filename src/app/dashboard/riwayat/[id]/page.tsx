@@ -1,4 +1,5 @@
 import { authOptions } from "@/app/server/auth"
+import ButtonPrint from "@/app/ui/buttons/ButtonPrint"
 import { convertToIndonesiaTanggal, priceSplitter } from "@/helpers/helper"
 import { getServerSession } from "next-auth"
 
@@ -9,10 +10,17 @@ export default async function Page(params: { params: { id: string } }) {
   return (
     <div className="mx-8 flex flex-col gap-2">
       <div className={`mt-10 flex flex-row justify-between`}>
-        <span className="text-3xl font-semibold capitalize">{data.data.farmer_name}</span>
-        <span className="text-base font-semibold text-tand-appr-1">
-          <span>Cetak Riwayat</span>
+        <span className="text-3xl font-semibold capitalize">
+          {data.data.farmer_name}
         </span>
+        <ButtonPrint
+          buttonType="primary"
+          label="Cetak Riwayat"
+          disabled={false}
+          className="ml-auto px-4"
+          width="auto"
+          data={data}
+        />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col p-6 bg-white shadow-main-4 rounded-[12px]">
@@ -44,12 +52,13 @@ export default async function Page(params: { params: { id: string } }) {
           <div className="flex flex-wrap">
             <span className="w-2/4 text-lg">Nama Kegiatan</span>
             <span className="w-2/4 text-lg">Biaya Operasional</span>
-            {data.data.operation_costs.datas.map((activity: any) => {
+            {data.data.operation_costs.datas.map((operation: any) => {
               return (
                 <div key={crypto.randomUUID()} className="w-full flex">
-                  <span className="w-2/4">{activity.activity_name}</span>
+                  <span className="w-2/4">{operation.name}</span>
                   <span className="w-2/4">
-                    {convertToIndonesiaTanggal(activity.activity_date)}
+                    Rp.
+                    {priceSplitter(operation.amount?.toString() ?? "0")}
                   </span>
                 </div>
               )
@@ -61,7 +70,7 @@ export default async function Page(params: { params: { id: string } }) {
                 <span>
                   Rp.
                   {priceSplitter(
-                    data.data.operation_costs.datas.total?.toString() ?? "0"
+                    data.data.operation_costs.total?.toString() ?? "0"
                   )}
                 </span>
               }
@@ -103,18 +112,17 @@ export default async function Page(params: { params: { id: string } }) {
             <span className="w-1/4 text-lg">Tanggal Penjualan</span>
             <span className="w-1/4 text-lg">Jumlah Penjualan</span>
             <span className="w-1/4 text-lg">Harga</span>
-            {data.data.sellings.datas.map((activity: any) => {
+            {data.data.sellings.datas.map((selling: any) => {
               return (
                 <div key={crypto.randomUUID()} className="w-full flex">
-                  <span className="w-1/4">{activity.activity_name}</span>
+                  <span className="w-1/4">{selling.name}</span>
                   <span className="w-1/4">
-                    {convertToIndonesiaTanggal(activity.activity_date)}
+                    {convertToIndonesiaTanggal(selling.selling_date)}
                   </span>
+                  <span className="w-1/4">{selling.amount}</span>
                   <span className="w-1/4">
-                    {convertToIndonesiaTanggal(activity.activity_date)}
-                  </span>
-                  <span className="w-1/4">
-                    {convertToIndonesiaTanggal(activity.activity_date)}
+                    Rp.
+                    {priceSplitter(selling.price?.toString() ?? "0")}
                   </span>
                 </div>
               )

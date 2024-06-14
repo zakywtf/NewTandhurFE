@@ -9,4 +9,5 @@ export type ButtonProp = {
   width?: string
   className?: string
   icon?: React.ReactNode
+  data?: any
 }

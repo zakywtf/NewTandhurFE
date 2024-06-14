@@ -9,7 +9,7 @@ import { createFarmerLand, getFarmerLands } from "@/helpers/helper"
 import { useAppDispatch, useAppSelector } from "@/helpers/libs/hooks"
 import { FormPetaniData } from "@/interfaces/FormPetani"
 import { PlusIcon } from "@heroicons/react/solid"
-import { setCookie } from "cookies-next"
+import { deleteCookie, setCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import Card from "./ui/cards/Card"
@@ -18,6 +18,7 @@ import FormInputPetani from "./ui/forms/FormInputPetani"
 import Loading from "./ui/loading"
 import Modal from "./ui/modals/Modal"
 import CardPagination from "./ui/paginations/CardPagination"
+import { signOut } from "next-auth/react"
 
 export default function Page() {
   const {
@@ -55,6 +56,11 @@ export default function Page() {
       maxAge: 60 * 60 * 24,
     })
     router.push(`/dashboard?farmer_land_id=${id}`)
+  }
+
+  const handleLogout = async() => {
+    await signOut()
+    deleteCookie("farmer")
   }
 
   useEffect(() => {
@@ -128,15 +134,25 @@ export default function Page() {
         <span className="text-2xl font-semibold text-tand-appr-1 ">
           Pilih Data Petani
         </span>
-        <Button
-          buttonType="primary"
-          label="Tambah Lahan"
-          disabled={false}
-          className="ml-auto px-4"
-          width="auto"
-          icon={<PlusIcon className="w-3 h-3 mr-2.5" />}
-          onClick={() => setShowModal(true)}
-        />
+        <div className="flex gap-4">
+          <Button
+            buttonType="primary"
+            label="Tambah Lahan"
+            disabled={false}
+            className="ml-auto px-4"
+            width="auto"
+            icon={<PlusIcon className="w-3 h-3 mr-2.5" />}
+            onClick={() => setShowModal(true)}
+          />
+          <Button
+            buttonType="primary"
+            label="Logout"
+            disabled={false}
+            className="px-4 bg-[#D9D9D9] shadow-none text-[#000] hover:bg-[#D9D9D9] active:bg-[#D9D9D9]"
+            width="auto"
+            onClick={handleLogout}
+          />
+        </div>
       </div>
 
       <div className="gap-y-8 flex flex-col">
